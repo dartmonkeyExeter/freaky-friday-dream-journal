@@ -21,9 +21,10 @@ def dream(dream_id):
             upload_date = dream[5]
             upload_date = datetime.strptime(upload_date, '%Y-%m-%d %H:%M:%S')
             upload_date = upload_date.strftime('%d.%m.%Y')
-            description = dream[6]
+            # likes = dream[6] im not using this yet (maybe never)
+            description = dream[7]
             
-    return render_template('dream.html', id=dream_id, title=title, content=content, author=author, tag=tag, upload_date=upload_date)
+    return render_template('dream.html', id=dream_id, title=title, content=content, author=author, tag=tag, upload_date=upload_date, description=description)
 
 if __name__ == '__main__':
     app.run(debug=True)
