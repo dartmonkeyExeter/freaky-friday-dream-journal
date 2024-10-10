@@ -1,0 +1,78 @@
+import sqlite3
+import bcrypt
+from datetime import datetime
+
+# Connect to the SQLite database (or create it if it doesn't exist)
+conn = sqlite3.connect('dreams_db.sqlite')
+cursor = conn.cursor()
+
+# Create the 'dreams' table
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS dreams (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        content TEXT NOT NULL,
+        title TEXT NOT NULL,
+        author TEXT NOT NULL,
+        tag TEXT,
+        upload_date TEXT NOT NULL,
+        likes INTEGER DEFAULT 0
+    );
+''')
+
+# Create the 'users' table
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        userid INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL
+    );
+''')
+
+# Commit the changes and close the connection
+conn.commit()
+print("Tables 'dreams' and 'users' created successfully.")
+
+# Function to add a user with a hashed password
+def add_user(username, password):
+    # Salt and hash the password
+    salt = bcrypt.gensalt()
+    password_hash = bcrypt.hashpw(password.encode('utf-8'), salt)
+    
+    # Insert the user into the 'users' table
+    cursor.execute('''
+        INSERT INTO users (username, password_hash)
+        VALUES (?, ?);
+    ''', (username, password_hash.decode('utf-8')))
+    
+    # Commit changes
+    conn.commit()
+    print(f"User '{username}' added successfully.")
+
+# Function to add a dream entry
+def add_dream(content, title, author, tag):
+    upload_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    # Insert the dream into the 'dreams' table
+    cursor.execute('''
+        INSERT INTO dreams (content, title, author, tag, upload_date)
+        VALUES (?, ?, ?, ?, ?);
+    ''', (content, title, author, tag, upload_date))
+    
+    # Commit changes
+    conn.commit()
+    print(f"Dream '{title}' added successfully.")
+
+# Close the connection when done
+def close_connection():
+    conn.close()
+
+# Example usage
+if __name__ == "__main__":
+    # Add a new user (username, password)
+    add_user('dreamer1', 'password123')
+    
+    # Add a new dream (content, title, author, tag)
+    add_dream('I was flying over a city...', 'Flying Dream', 'dreamer1', 'flying')
+    
+    # Close the database connection
+    close_connection()

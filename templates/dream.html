@@ -15,20 +15,45 @@
     <div class="header-container">
         <div class="header-left">
             <label class="switch">
-                <input type="checkbox">
+                <input type="checkbox" id="dark-mode-toggle">
                 <span class="slider round"></span>
             </label>
         </div>
 
         <div class="header-mid">
-            <span id="dreams" class="header-buttons">DREAMS</span>
-            <span id="home" class="header-buttons">HOME</span>
-            <span id="about" class="header-buttons">ABOUT</span>
+            <div id="dreams" class="header-buttons">DREAMS</div>
+            <div class="vl"></div>
+            <div id="home" class="header-buttons">HOME</div>
+            <div class="vl"></div>
+            <div id="about" class="header-buttons">ABOUT</div>
         </div>
 
         <div class="header-right">
-            <img src="{{ url_for('static', filename='images/{{ id }}.webp') }}" id="pfp">
+            Aaron H.
+            <img src="{{ url_for('static', filename='images/' + (id|string) + '.webp') }}" id="pfp">
         </div>
     </div>
+
+    <script>
+
+        function toggleDarkMode() {
+            var bdy = document.body;
+            var header = document.getElementsByClassName("header-container")[0];
+            var headerButtons = document.getElementsByClassName("header-buttons");
+            var vl = document.getElementsByClassName("vl");
+
+            bdy.classList.toggle("dark-mode");
+            header.classList.toggle("dark-mode-divs");
+            for (var i = 0; i < headerButtons.length; i++) {
+                headerButtons[i].classList.toggle("dark-mode-buttons");
+            }
+            for (var i = 0; i < vl.length; i++) {
+                vl[i].classList.toggle("dark-mode-vl");
+            }
+        }
+
+        document.getElementById('dark-mode-toggle').addEventListener('change', toggleDarkMode);
+
+    </script>
 </body>
 </html>
