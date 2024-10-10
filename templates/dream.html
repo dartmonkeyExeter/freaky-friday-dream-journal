@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dream.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap" rel="stylesheet">
@@ -22,9 +23,9 @@
 
         <div class="header-mid">
             <div id="dreams" class="header-buttons">DREAMS</div>
-            <div class="vl"></div>
+            <div class="vl" style="height: 80%;"></div>
             <div id="home" class="header-buttons">HOME</div>
-            <div class="vl"></div>
+            <div class="vl" style="height: 80%;"></div>
             <div id="about" class="header-buttons">ABOUT</div>
         </div>
 
@@ -34,26 +35,63 @@
         </div>
     </div>
 
-    <script>
 
+    <div class="main-content">
+        <div class="dream-content">
+            {{ content }}
+        </div>
+
+        <div class="vl" style="height: 100%;"></div>
+
+        <div class="info-and-buttons">
+            <div class="dream-title">{{ title }}</div>
+            <div class="hl" style="width: 80%; align-self: safe	;"></div>    
+            <div class="dream-info">
+                <div class="dream-info-left">
+                    Date:<br>
+                    Dreamer:<br>
+                    Genre:<br>
+                    Description:<br>
+                </div>
+                <div class="dream-info-right">
+                    {{ upload_date }}<br>
+                    {{ author }}<br>
+                    {{ tag }}<br>
+                </div>
+            </div>
+
+            <div class="dream-description">
+                this is a test, i'm testing something, okay? stop judging dude, im just testing. leave me alone! a a a a a a a a a a a a a a a a a a a a a a a
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
         function toggleDarkMode() {
             var bdy = document.body;
             var header = document.getElementsByClassName("header-container")[0];
             var headerButtons = document.getElementsByClassName("header-buttons");
             var vl = document.getElementsByClassName("vl");
+            var hl = document.getElementsByClassName("hl");
+            var mainContent = document.getElementsByClassName("main-content")[0];
 
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
+            mainContent.classList.toggle("dark-mode-divs");
             for (var i = 0; i < headerButtons.length; i++) {
                 headerButtons[i].classList.toggle("dark-mode-buttons");
             }
             for (var i = 0; i < vl.length; i++) {
-                vl[i].classList.toggle("dark-mode-vl");
+                vl[i].classList.toggle("dark-mode-line");
+            }
+            for (var i = 0; i < hl.length; i++) {
+                hl[i].classList.toggle("dark-mode-line");
             }
         }
 
         document.getElementById('dark-mode-toggle').addEventListener('change', toggleDarkMode);
-
     </script>
 </body>
 </html>
