@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{{ title }} - Dream Journal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dream.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,19 +64,107 @@
                 {{ description }}
             </div>
 
+            <div class="dream-options">
+                {% if user_is_author %}
+                    <div class="dream-buttons edit-dream-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80px" height="80px" viewBox="0 0 16 16" fill="none">
+                            <path d="M8.29289 3.70711L1 11V15H5L12.2929 7.70711L8.29289 3.70711Z" fill="#FFFFFF"/>
+                            <path d="M9.70711 2.29289L13.7071 6.29289L15.1716 4.82843C15.702 4.29799 16 3.57857 16 2.82843C16 1.26633 14.7337 0 13.1716 0C12.4214 0 11.702 0.297995 11.1716 0.828428L9.70711 2.29289Z" fill="#FFFFFF"/>
+                        </svg>
+                    </div>
+
+                    <div class="dream-buttons delete-dream-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 6V16.2C18 17.8802 18 18.7202 17.673 19.362C17.3854 19.9265 16.9265 20.3854 16.362 20.673C15.7202 21 14.8802 21 13.2 21H10.8C9.11984 21 8.27976 21 7.63803 20.673C7.07354 20.3854 6.6146 19.9265 6.32698 19.362C6 18.7202 6 17.8802 6 16.2V6M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                {% endif %}
+                <div class="dream-buttons share-dream-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" viewBox="0 0 24 24" fill="none">
+                        <path d="M9.61109 12.4L10.8183 18.5355C11.0462 19.6939 12.6026 19.9244 13.1565 18.8818L19.0211 7.84263C19.248 7.41555 19.2006 6.94354 18.9737 6.58417M9.61109 12.4L5.22642 8.15534C4.41653 7.37131 4.97155 6 6.09877 6H17.9135C18.3758 6 18.7568 6.24061 18.9737 6.58417M9.61109 12.4L18.9737 6.58417M19.0555 6.53333L18.9737 6.58417" stroke="#FFFFFF" stroke-width="2"/>
+                    </svg>
+                </div>
+            </div>
+
         </div>
     </div>
 
+    <script>
+
+        const userAuthor = {{ user_is_author|tojson }};
+
+        function goToPage(page) {
+            var root = window.location.href.split("/")[0] + "/";
+            window.href.location = root + page;
+        }
+
+        var dreams = document.getElementById("dreams");
+        var home = document.getElementById("home");
+        var about = document.getElementById("about");
+
+        dreams.addEventListener("click", function() {
+            goToPage("dreams");
+        });
+
+        home.addEventListener("click", function() {
+            goToPage("home");
+        });
+
+        about.addEventListener("click", function() {
+            goToPage("about");
+        });
+
+        var editDreamButton = document.getElementsByClassName("edit-dream-button")[0];
+        var deleteDreamButton = document.getElementsByClassName("delete-dream-button")[0];
+        var shareDreamButton = document.getElementsByClassName("share-dream-button")[0];
+
+        editDreamButton.addEventListener("click", function() {
+            // will add later
+        });
+
+        deleteDreamButton.addEventListener("click", function() {
+            // will add later
+        });
+
+        shareDreamButton.addEventListener("click", function() {
+            navigator.clipboard.writeText(window.location.href);
+        });
+
+    </script>
 
     <script>
         function toggleDarkMode() {
+            if (localStorage.getItem('dark-mode') === 'true') {
+                localStorage.setItem('dark-mode', 'false');
+            } else {
+                localStorage.setItem('dark-mode', 'true');
+            }
+
             var bdy = document.body;
             var header = document.getElementsByClassName("header-container")[0];
             var headerButtons = document.getElementsByClassName("header-buttons");
             var vl = document.getElementsByClassName("vl");
             var hl = document.getElementsByClassName("hl");
             var mainContent = document.getElementsByClassName("main-content")[0];
+            var dreamInfoLeft = document.getElementsByClassName("dream-info-left")[0];
+            var dreamInfoRight = document.getElementsByClassName("dream-info-right")[0];
 
+            var dreamButtons = document.getElementsByClassName("dream-buttons");
+
+            for (var i = 0; i < dreamButtons.length; i++) {
+                if (dreamButtons[i].classList.contains("edit-dream-button")) {
+                    dreamButtons[i].classList.toggle("edit-dream-button-dark");
+                }
+                else if(dreamButtons[i].classList.contains("delete-dream-button")) {
+                    dreamButtons[i].classList.toggle("delete-dream-button-dark");
+                }
+                else {
+                    dreamButtons[i].classList.toggle("share-dream-button-dark");
+                }
+            }
+
+            dreamInfoLeft.classList.toggle("dream-info-left-dark");
+            dreamInfoRight.classList.toggle("dream-info-right-dark");
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
             mainContent.classList.toggle("dark-mode-divs");
@@ -89,9 +177,21 @@
             for (var i = 0; i < hl.length; i++) {
                 hl[i].classList.toggle("dark-mode-line");
             }
+
         }
 
-        document.getElementById('dark-mode-toggle').addEventListener('change', toggleDarkMode);
+        const toggle = document.getElementById('dark-mode-toggle');
+
+        let isDarkMode = localStorage.getItem('dark-mode') === 'true';
+
+        if (isDarkMode) {
+            toggle.checked = true;
+            toggleDarkMode();
+            localStorage.setItem('dark-mode', 'true');
+        }
+
+       toggle.addEventListener('change', toggleDarkMode);
     </script>
+
 </body>
 </html>

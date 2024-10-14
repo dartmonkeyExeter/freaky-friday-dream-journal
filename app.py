@@ -23,8 +23,10 @@ def dream(dream_id):
             upload_date = upload_date.strftime('%d.%m.%Y')
             # likes = dream[6] im not using this yet (maybe never)
             description = dream[7]
-            
-    return render_template('dream.html', id=dream_id, title=title, content=content, author=author, tag=tag, upload_date=upload_date, description=description)
+
+    user_is_author = True # will eventually check session for this
+
+    return render_template('dream.html', id=dream_id, title=title, content=content, author=author, tag=tag, upload_date=upload_date, description=description, user_is_author=user_is_author)
 
 if __name__ == '__main__':
     app.run(debug=True)

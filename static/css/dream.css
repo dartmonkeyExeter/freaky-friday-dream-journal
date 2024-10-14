@@ -73,9 +73,59 @@
 .dream-description {
     font-family: 'Kumbh Sans', sans-serif;
     font-size: 20px;
+    margin-top: 10px;
     margin-left: 30px;
     margin-right: 30px;
     text-align: left;
     overflow-y: scroll;
     flex: 1;
+}
+
+.dream-options { 
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.dream-buttons {
+    height: 100px;
+    width: 100px;
+    border-radius: 25px;
+    color: #fff;
+    margin: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+    box-shadow: 0px 5px 0px 0px rgba(0,0,0,0.25);
+}
+
+.dream-buttons:hover {
+    transform: scale(1.1);
+}
+
+.edit-dream-button {
+    background-color: #7E24B6;
+}
+
+.delete-dream-button {
+    background-color: #E16266;
+}
+
+.share-dream-button {
+    background-color: #FCB67C;
+}
+
+.edit-dream-button-dark {
+    background-color: #303593 !important;
+}
+
+.delete-dream-button-dark {
+    background-color: #7479D5 !important;
+}
+
+.share-dream-button-dark {
+    background-color: #AF76D5 !important;
 }
