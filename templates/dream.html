@@ -15,7 +15,13 @@
 <body>
     <div class="header-container">
         <div class="header-left">
-            <label class="switch">
+            <div class="dropdown-button-mobile">
+                <svg id="dropdown-svg" xmlns="http://www.w3.org/2000/svg" width="48px" height="48px" viewBox="0 0 24 24" fill="none">
+                    <path d="M8 6L21 6.00078M8 12L21 12.0008M8 18L21 18.0007M3 6.5H4V5.5H3V6.5ZM3 12.5H4V11.5H3V12.5ZM3 18.5H4V17.5H3V18.5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+    
+            <label class="switch" id="dark-mode-switch">
                 <input type="checkbox" id="dark-mode-toggle">
                 <span class="slider round"></span>
             </label>
@@ -30,22 +36,36 @@
         </div>
 
         <div class="header-right">
-            Aaron H.
-            <img src="{{ url_for('static', filename='images/' + (id|string) + '.webp') }}" id="pfp">
+            {% if username %}
+            <span id="user-name">{{ username }}.</span>
+            <img src="{{ url_for('static', filename='images/profilephotos/' + username + '.webp') }}" id="pfp">
+            {% else %}
+            <a href="" class="header-buttons">LOGIN</a>
+            {% endif %}
         </div>
     </div>
 
+    <div class="dropdown-content-mobile">
+        <div class="dropdown-content">
+            <div id="dreams" class="header-buttons">DREAMS</div>
+            <div class="vl" style="height: 80%;"></div>
+            <div id="home" class="header-buttons">HOME</div>
+            <div class="vl" style="height: 80%;"></div>
+            <div id="about" class="header-buttons">ABOUT</div>
+        </div>
+    </div>
 
     <div class="main-content">
         <div class="dream-content">
             {{ content }}
         </div>
 
-        <div class="vl" style="height: 100%;"></div>
+        <div class="vl" style="height: 100%;" id="dream-seperator"></div>
+        <div class="hl" style="width: 80%; align-self: center;" id="dream-seperator-mobile"></div>
 
         <div class="info-and-buttons">
             <div class="dream-title">{{ title }}</div>
-            <div class="hl" style="width: 80%; align-self: safe	;"></div>    
+            <div class="hl" style="width: 80%; align-self: center;"></div>    
             <div class="dream-info">
                 <div class="dream-info-left">
                     Date:<br>
@@ -85,9 +105,23 @@
                     </svg>
                 </div>
             </div>
-
         </div>
     </div>
+
+    <script>
+        const dropDownButton = document.getElementsByClassName("dropdown-button-mobile")[0];
+        const dropDownContent = document.getElementsByClassName("dropdown-content-mobile")[0];
+
+        dropDownButton.addEventListener("click", function() {
+            dropDownContent.classList.toggle("show");
+        });
+
+        window.addEventListener("resize", function() {
+            if (window.innerWidth > 850) {
+                dropDownContent.classList.remove("show");
+            }
+        });
+    </script>
 
     <script>
 
@@ -133,23 +167,25 @@
     </script>
 
     <script>
+        var bdy = document.body;
+        var header = document.getElementsByClassName("header-container")[0];
+        var headerButtons = document.getElementsByClassName("header-buttons");
+        var vl = document.getElementsByClassName("vl");
+        var hl = document.getElementsByClassName("hl");
+        var mainContent = document.getElementsByClassName("main-content")[0];
+        var dreamInfoLeft = document.getElementsByClassName("dream-info-left")[0];
+        var dreamInfoRight = document.getElementsByClassName("dream-info-right")[0];
+        var dreamButtons = document.getElementsByClassName("dream-buttons");
+        var dreamButtonsContainer = document.getElementsByClassName("dream-options")[0];
+        var dropDownContainer = document.getElementsByClassName("dropdown-content-mobile")[0];
+        var dropDownSVG = document.getElementById("dropdown-svg").querySelector("path");
+        
         function toggleDarkMode() {
             if (localStorage.getItem('dark-mode') === 'true') {
                 localStorage.setItem('dark-mode', 'false');
             } else {
                 localStorage.setItem('dark-mode', 'true');
             }
-
-            var bdy = document.body;
-            var header = document.getElementsByClassName("header-container")[0];
-            var headerButtons = document.getElementsByClassName("header-buttons");
-            var vl = document.getElementsByClassName("vl");
-            var hl = document.getElementsByClassName("hl");
-            var mainContent = document.getElementsByClassName("main-content")[0];
-            var dreamInfoLeft = document.getElementsByClassName("dream-info-left")[0];
-            var dreamInfoRight = document.getElementsByClassName("dream-info-right")[0];
-
-            var dreamButtons = document.getElementsByClassName("dream-buttons");
 
             for (var i = 0; i < dreamButtons.length; i++) {
                 if (dreamButtons[i].classList.contains("edit-dream-button")) {
@@ -163,11 +199,20 @@
                 }
             }
 
+            dropDownContainer.classList.toggle("dark-mode-divs");
+            dreamButtonsContainer.classList.toggle("dark-mode-divs");
             dreamInfoLeft.classList.toggle("dream-info-left-dark");
             dreamInfoRight.classList.toggle("dream-info-right-dark");
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
             mainContent.classList.toggle("dark-mode-divs");
+            
+            if (localStorage.getItem('dark-mode') === 'true') {
+                dropDownSVG.setAttribute("stroke", "#FFFFFF");
+            } else {
+                dropDownSVG.setAttribute("stroke", "#000000");
+            }
+
             for (var i = 0; i < headerButtons.length; i++) {
                 headerButtons[i].classList.toggle("dark-mode-buttons");
             }

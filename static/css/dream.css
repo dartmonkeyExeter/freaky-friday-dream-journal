@@ -17,6 +17,7 @@
 .dream-content {
     padding: 10px;
     flex: 2;
+    overflow-y: scroll;
 }
 
 .info-and-buttons {
@@ -30,6 +31,10 @@
 .dream-content {
     font-family: 'Kumbh Sans', sans-serif;
     font-size: 24px;
+}
+
+#dream-seperator-mobile {
+    display: none;
 }
 
 .dream-title {
@@ -128,4 +133,53 @@
 
 .share-dream-button-dark {
     background-color: #AF76D5 !important;
+}
+
+@media only screen and (max-width: 850px) {
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    .main-content {
+        align-self: center;
+        flex-direction: column;
+        height: 65%;
+    }
+
+    .dream-content {
+        font-size: 16px;
+        flex: 1;
+    }
+
+    #dream-seperator {
+        display: none;
+    }
+
+    #dream-seperator-mobile {
+        display: block;
+    }
+
+    .dream-options {
+        position: absolute;
+        bottom: 20px;
+        width: fit-content;
+        border: 10px solid #D4D4D4;
+        border-radius: 20px;
+        box-shadow: 0px 10px 0px 0px rgba(0,0,0,0.26);
+        background-color: #FAFAFE;
+    }
+    
+    .dream-info-left, .dream-info-right {
+        font-size: 16px;
+    }
+
+    .dream-buttons {
+        height: 90px;
+        width: 90px;
+    }
+
+    .dream-description {
+        font-size: 16px;
+    }
 }
