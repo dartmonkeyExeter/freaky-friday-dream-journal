@@ -55,6 +55,26 @@
         </div>
     </div>
 
+    <div class="link-copied-popup">
+        Link copied!
+    </div>
+
+    <div class="confirmation-popup">
+        <div class="confirmation-popup-content">
+            <div class="confirmation-popup-text">
+                Are you sure you want to delete this dream?
+            </div>
+            <div class="confirmation-popup-buttons">
+                <div class="confirmation-popup-button yes-button">
+                    Yes
+                </div>
+                <div class="confirmation-popup-button no-button">
+                    No
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="main-content">
         <div class="dream-content">
             {{ content }}
@@ -128,8 +148,7 @@
         const userAuthor = {{ user_is_author|tojson }};
 
         function goToPage(page) {
-            var root = window.location.href.split("/")[0] + "/";
-            window.href.location = root + page;
+            window.location.href = page;
         }
 
         var dreams = document.getElementById("dreams");
@@ -137,31 +156,51 @@
         var about = document.getElementById("about");
 
         dreams.addEventListener("click", function() {
-            goToPage("dreams");
+            goToPage("/dreams");
         });
 
         home.addEventListener("click", function() {
-            goToPage("home");
+            goToPage("/");
         });
 
         about.addEventListener("click", function() {
-            goToPage("about");
+            goToPage("/about");
         });
 
         var editDreamButton = document.getElementsByClassName("edit-dream-button")[0];
+
         var deleteDreamButton = document.getElementsByClassName("delete-dream-button")[0];
+
+        var confirmationPopup = document.getElementsByClassName("confirmation-popup")[0];
+        var confirmationButton = document.getElementsByClassName("yes-button")[0];
+        var cancelButton = document.getElementsByClassName("no-button")[0];
+
         var shareDreamButton = document.getElementsByClassName("share-dream-button")[0];
 
         editDreamButton.addEventListener("click", function() {
-            // will add later
+            goToPage("/edit/{{ dream_id }}");
+        });
+
+        confirmationButton.addEventListener("click", function() {
+            var dreamID = "{{ dream_id }}";
+            goToPage("/delete/" + dreamID);
+        });
+
+        cancelButton.addEventListener("click", function() {
+            confirmationPopup.style.display = "none";
         });
 
         deleteDreamButton.addEventListener("click", function() {
-            // will add later
+            confirmationPopup.style.display = "flex";
         });
 
         shareDreamButton.addEventListener("click", function() {
             navigator.clipboard.writeText(window.location.href);
+            var linkCopiedPopup = document.getElementsByClassName("link-copied-popup")[0];
+            linkCopiedPopup.style.opacity = "1";
+            setTimeout(function() {
+                linkCopiedPopup.style.opacity = "0";
+            }, 1000);
         });
 
     </script>

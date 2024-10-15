@@ -7,42 +7,7 @@ from datetime import datetime
 conn = sqlite3.connect("dreams_db.sqlite")
 cursor = conn.cursor()
 
-# Create the 'dreams' table with the new structure including UUIDs
-cursor.execute(
-    """
-    CREATE TABLE IF NOT EXISTS dreams (
-        dream_id TEXT PRIMARY KEY,
-        content TEXT,
-        title TEXT,
-        description TEXT,
-        author_id TEXT,
-        author_name TEXT,
-        tag TEXT,
-        upload_date DATE NOT NULL,
-        likes INTEGER DEFAULT 0,
-        FOREIGN KEY (author_id) REFERENCES users(user_id)
-    );
-    """
-)
-
-# Create the 'users' table with the new structure including UUIDs
-cursor.execute(
-    """
-    CREATE TABLE IF NOT EXISTS users (
-        user_id TEXT PRIMARY KEY,
-        username TEXT NOT NULL UNIQUE,
-        hash TEXT NOT NULL,
-        email TEXT,
-        admin BOOLEAN DEFAULT FALSE
-    );
-    """
-)
-
-# Commit the changes and close the connection
-conn.commit()
-print("Tables 'dreams' and 'users' created successfully.")
-
-
+# Function to add a user with a hashed password
 def add_user(username, password, email, admin=False):
     # Generate a UUID for the user_id
     user_id = str(uuid.uuid4())

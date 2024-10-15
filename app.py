@@ -10,7 +10,7 @@ cursor = db.cursor()
 
 
 def dummy_user():
-    session["username"] = "dartmonkey"
+    session["username"] = "dreamer1"
     session["user_id"] = "ed03a10d-6e9e-442d-a318-7f21f31ebcde"
 
 
@@ -23,8 +23,7 @@ def get_session_info():
         username = None
     return username, user_id
 
-
-@app.route("/dream/<dream_id>")
+@app.route("/dreams/<dream_id>")
 def dream(dream_id):
 
     username, user_id = get_session_info()
@@ -39,12 +38,14 @@ def dream(dream_id):
             title = dream[2]
             description = dream[3]
             author_id = dream[4]
-            author_name = dream[5]
-            tag = dream[6]
-            upload_date = dream[7]
+            tag = dream[5]
+            upload_date = dream[6]
             upload_date = datetime.strptime(upload_date, "%Y-%m-%d")
             upload_date = upload_date.strftime("%d.%m.%Y")
             # likes = dream[8] im not using this yet (maybe never)
+
+            cursor.execute("SELECT username FROM users WHERE user_id = ?", (author_id,))
+            author_name = cursor.fetchone()[0]
 
     if user_id == author_id:
         user_is_author = True
@@ -53,6 +54,7 @@ def dream(dream_id):
 
     return render_template(
         "dream.html",
+        dream_id=dream_id,
         id=dream_id,
         title=title,
         content=content,
@@ -64,7 +66,6 @@ def dream(dream_id):
         username=username,
         user_id=user_id,
     )
-
 
 @app.route("/dreams")
 def dreams():
@@ -78,6 +79,26 @@ def dreams():
         "dreams.html", dreams=dreams, username=username, user_id=user_id
     )
 
+@app.route("/delete/<dream_id>")
+def delete(dream_id):
+    username, user_id = get_session_info()
+
+    with db:
+        if user_id is None:
+            return "stop trying to delete a dream when not signed in", 403
+        
+        cursor.execute("SELECT author_id FROM dreams WHERE dream_id = ?", (dream_id,))
+        author_id = cursor.fetchone()[0]
+        cursor.execute("SELECT admin FROM users WHERE user_id = ?", (author_id,))
+        admin = cursor.fetchone()[0]
+
+        if author_id != user_id:
+            return "stop trying to delete someone elses dream you bitch", 403
+
+        if author_id == user_id or admin == 1:
+            cursor.execute("DELETE FROM dreams WHERE dream_id = ?", (dream_id,))
+            return redirect(url_for('dreams'))
+        
 
 if __name__ == "__main__":
     # currently using a "fake user" session for testing
