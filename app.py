@@ -15,13 +15,15 @@ def dummy_user():
 
 
 def get_session_info():
-    dummy_user()  # remove later
+    # dummy_user()
     if "username" in session:
         username = session.get("username")
         user_id = session.get("user_id")
     else:
         username = None
+        user_id = None
     return username, user_id
+
 
 @app.route("/dreams/<dream_id>")
 def dream(dream_id):
@@ -67,17 +69,19 @@ def dream(dream_id):
         user_id=user_id,
     )
 
+
 @app.route("/dreams")
 def dreams():
 
     username, user_id = get_session_info()
 
     with db:
-        cursor.execute("SELECT * FROM dreams")
+        cursor.execute("SELECT * FROM dreams WHERE private = 0")
         dreams = cursor.fetchall()
     return render_template(
         "dreams.html", dreams=dreams, username=username, user_id=user_id
     )
+
 
 @app.route("/delete/<dream_id>")
 def delete(dream_id):
@@ -86,7 +90,7 @@ def delete(dream_id):
     with db:
         if user_id is None:
             return "stop trying to delete a dream when not signed in", 403
-        
+
         cursor.execute("SELECT author_id FROM dreams WHERE dream_id = ?", (dream_id,))
         author_id = cursor.fetchone()[0]
         cursor.execute("SELECT admin FROM users WHERE user_id = ?", (author_id,))
@@ -97,8 +101,13 @@ def delete(dream_id):
 
         if author_id == user_id or admin == 1:
             cursor.execute("DELETE FROM dreams WHERE dream_id = ?", (dream_id,))
-            return redirect(url_for('dreams'))
-        
+            return redirect(url_for("dreams"))
+
+
+@app.route("/login")
+def login():
+    return "test"
+
 
 if __name__ == "__main__":
     # currently using a "fake user" session for testing

@@ -28,11 +28,11 @@
         </div>
 
         <div class="header-mid">
-            <div id="dreams" class="header-buttons">DREAMS</div>
+            <div class="header-buttons dreams-button">DREAMS</div>
             <div class="vl" style="height: 80%;"></div>
-            <div id="home" class="header-buttons">HOME</div>
+            <div class="header-buttons home-button">HOME</div>
             <div class="vl" style="height: 80%;"></div>
-            <div id="about" class="header-buttons">ABOUT</div>
+            <div class="header-buttons about-button">ABOUT</div>
         </div>
 
         <div class="header-right">
@@ -40,18 +40,18 @@
             <span id="user-name">{{ username }}.</span>
             <img src="{{ url_for('static', filename='images/profilephotos/' + username + '.webp') }}" id="pfp">
             {% else %}
-            <a href="" class="header-buttons">LOGIN</a>
+            <a href="{{ url_for('login') }}" class="header-buttons">LOGIN</a>
             {% endif %}
         </div>
     </div>
 
     <div class="dropdown-content-mobile">
         <div class="dropdown-content">
-            <div id="dreams" class="header-buttons">DREAMS</div>
+            <div class="header-buttons dreams-button">DREAMS</div>
             <div class="vl" style="height: 80%;"></div>
-            <div id="home" class="header-buttons">HOME</div>
+            <div class="header-buttons home-button">HOME</div>
             <div class="vl" style="height: 80%;"></div>
-            <div id="about" class="header-buttons">ABOUT</div>
+            <div class="header-buttons about-button">ABOUT</div>
         </div>
     </div>
 
@@ -151,21 +151,40 @@
             window.location.href = page;
         }
 
-        var dreams = document.getElementById("dreams");
-        var home = document.getElementById("home");
-        var about = document.getElementById("about");
+        var dreamsButtons = document.getElementsByClassName("dreams-button");
+        var homeButtons = document.getElementsByClassName("home-button");
+        var aboutButtons = document.getElementsByClassName("about-button");
 
-        dreams.addEventListener("click", function() {
-            goToPage("/dreams");
+        for (var i = 0; i < dreamsButtons.length; i++) {
+            dreamsButtons[i].addEventListener("click", function() {
+                goToPage("/dreams");
+            });
+        }
+
+        for (var i = 0; i < homeButtons.length; i++) {
+            homeButtons[i].addEventListener("click", function() {
+                goToPage("/");
+            });
+        }
+
+        for (var i = 0; i < aboutButtons.length; i++) {
+            aboutButtons[i].addEventListener("click", function() {
+                goToPage("/about");
+            });
+        }
+
+        var shareDreamButton = document.getElementsByClassName("share-dream-button")[0];
+
+        shareDreamButton.addEventListener("click", function() {
+            navigator.clipboard.writeText(window.location.href);
+            var linkCopiedPopup = document.getElementsByClassName("link-copied-popup")[0];
+            linkCopiedPopup.style.opacity = "1";
+            setTimeout(function() {
+                linkCopiedPopup.style.opacity = "0";
+            }, 1000);
         });
 
-        home.addEventListener("click", function() {
-            goToPage("/");
-        });
-
-        about.addEventListener("click", function() {
-            goToPage("/about");
-        });
+        try {
 
         var editDreamButton = document.getElementsByClassName("edit-dream-button")[0];
 
@@ -175,7 +194,6 @@
         var confirmationButton = document.getElementsByClassName("yes-button")[0];
         var cancelButton = document.getElementsByClassName("no-button")[0];
 
-        var shareDreamButton = document.getElementsByClassName("share-dream-button")[0];
 
         editDreamButton.addEventListener("click", function() {
             goToPage("/edit/{{ dream_id }}");
@@ -194,15 +212,10 @@
             confirmationPopup.style.display = "flex";
         });
 
-        shareDreamButton.addEventListener("click", function() {
-            navigator.clipboard.writeText(window.location.href);
-            var linkCopiedPopup = document.getElementsByClassName("link-copied-popup")[0];
-            linkCopiedPopup.style.opacity = "1";
-            setTimeout(function() {
-                linkCopiedPopup.style.opacity = "0";
-            }, 1000);
-        });
-
+        }
+        catch (e) {
+            console.log('user not author');
+        }
     </script>
 
     <script>
