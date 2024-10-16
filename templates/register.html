@@ -38,8 +38,8 @@
 
         <div class="header-right">
             {% if username %}
-            <span id="user-name">{{ username }}.</span>
-            <img src="{{ url_for('static', filename='images/profilephotos/' + user_id + '.webp') }}" id="pfp">
+            <span id="user-name">{{ username }}</span>
+            <img src="{{ url_for('static', filename='images/profilephotos/' + profile_pic) }}" id="pfp">
             {% else %}
             <a href="{{ url_for('login') }}" class="header-buttons">LOGIN</a>
             {% endif %}
@@ -93,50 +93,30 @@
         ];
   
         function validatePassword(passwordValue) {
-            // Check password length
             let passValid = true;
+
             if (passwordValue.length < 8 || passwordValue.length > 20) {
-                    passValid = false;
-                    return passValid;
-                }
+                passValid = false;
+            }
 
-                // Check for numbers
-                if (!/\d/.test(passwordValue)) {
-                    passValid = false;
-                    return passValid;
-                }
+            if (!/\d/.test(passwordValue)) {  // Check for digits
+                passValid = false;
+            }
 
-                // Check for uppercase letters
-                if (!/[A-Z]/.test(passwordValue)) {
-                    passValid = false;
-                    return passValid;
-                }
+            if (!/[A-Z]/.test(passwordValue)) {  // Check for uppercase letters
+                passValid = false;
+            }
 
-                // Check for lowercase letters
-                if (!/[a-z]/.test(passwordValue)) {
-                    passValid = false;
-                    return passValid;
-                }
+            if (!/[a-z]/.test(passwordValue)) {  // Check for lowercase letters
+                passValid = false;
+            }
 
-                // Check for special characters
-                for (let i = 0; i < specialChars.length; i++) {
-                    if (i === 0) { // Skip the first iteration (space character)
-                        continue;
-                    }
+            // Check for any special character using regular expression
+            if (!/[ !"@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(passwordValue)) {
+                passValid = false;
+            }
 
-                    if (passwordValue.includes(specialChars[i])) {
-                        earlyExit = true;  // Flag early exit if a special character is found
-                        break;
-                    }
-                }
-
-                // Only set passValid to false if earlyExit was triggered (special character found)
-                if (!earlyExit) {
-                    passValid = false;
-                    return passValid;
-                }
-
-                return passValid;
+            return passValid;
         }
 
         function validateEmail(email) {
@@ -204,25 +184,25 @@
             });
         }
 
-        function validateForm(event) {
+        async function validateForm(event) {
             event.preventDefault();
 
-            let userNameValid = validateUsername($('#username-input').val());
+            let userNameValid = await validateUsername($('#username-input').val());
             let emailValid = false;
             let passwordValid = false;
             
             if ($('#confirm-email').val() === $('#email-input').val()) {
-                emailValid = validateEmail($('#email-input').val());
+                emailValid = await validateEmail($('#email-input').val());
             }
 
             if ($('#password-input').val() === $('#confirm-password').val()) {
-                passwordValid = validatePassword($('#password-input').val());
+                passwordValid = await validatePassword($('#password-input').val());
             }
 
             console.log(userNameValid, emailValid, passwordValid);
 
             if (userNameValid && emailValid && passwordValid) {
-                $('.register-form').submit();
+                $('.register-form')[0].submit();
             } else {
                 alert('Invalid form data');
             }

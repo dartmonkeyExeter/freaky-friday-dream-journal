@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for, session
 import sqlite3
 from datetime import datetime
-import uuid, bcrypt
+import uuid, bcrypt, os
 
 app = Flask(__name__)
 app.secret_key = "sdiusahdioasbfsdopjsdoifioiowesfiso"
@@ -13,15 +13,20 @@ def dummy_user():
     session["username"] = "dreamer1"
     session["user_id"] = "ed03a10d-6e9e-442d-a318-7f21f31ebcde"
 
+def get_profile_picture(user_id):
+    if user_id is None:
+        return None
+    exts = ["png", "jpg", "jpeg", "gif", "webp", "jfif"]
+    for ext in exts:
+        if os.path.exists(f"{user_id}.{ext}"):
+            return f"{user_id}.{ext}"
+    return "default.jpg"
 
 def get_session_info():
     #dummy_user()
     if "username" in session:
         username = session.get("username")
         user_id = session.get("user_id")
-        
-        username = username[0]
-        user_id = user_id[0]
     else:
         username = None
         user_id = None
@@ -32,6 +37,7 @@ def get_session_info():
 def dream(dream_id):
 
     username, user_id = get_session_info()
+    profile_pic = get_profile_picture(user_id)
 
     with db:
         cursor.execute("SELECT * FROM dreams WHERE dream_id = ?", (dream_id,))
@@ -70,18 +76,20 @@ def dream(dream_id):
         user_is_author=user_is_author,
         username=username,
         user_id=user_id,
+        profile_pic=profile_pic,
     )
 
 @app.route("/dreams")
 def dreams():
 
     username, user_id = get_session_info()
+    profile_pic = get_profile_picture(user_id)
 
     with db:
         cursor.execute("SELECT * FROM dreams WHERE private = 0")
         dreams = cursor.fetchall()
     return render_template(
-        "dreams.html", dreams=dreams, username=username, user_id=user_id
+        "dreams.html", dreams=dreams, username=username, user_id=user_id, profile_pic=profile_pic
     )
 
 @app.route("/delete/<dream_id>")
@@ -129,10 +137,10 @@ def login():
                 if bcrypt.checkpw(given_pass.encode("utf-8"), stored_hash):
                     session["username"] = cursor.execute("""
                                         SELECT username FROM users WHERE email = ?;
-                                        """, (given_email,)).fetchone()
+                                        """, (given_email,)).fetchone()[0]
                     session["user_id"] =  cursor.execute("""
                                         SELECT user_id FROM users WHERE email = ?;
-                                        """, (given_email,)).fetchone()
+                                        """, (given_email,)).fetchone()[0]
                     return redirect(url_for("dreams"))
                 else:
                     err = "Incorrect email or password."
