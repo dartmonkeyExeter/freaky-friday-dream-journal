@@ -66,13 +66,13 @@
                     <h3>Username:</h3>
                     <input type="text" placeholder="" name="username" class="register-box-input" id="username-input">
                     <h3>Email:</h3>
-                    <input type="text" placeholder="" name="email" class="register-box-input">
+                    <input type="text" placeholder="" name="email" class="register-box-input" id="email-input">
                     <h3>Confirm Email:</h3>
-                    <input type="text" placeholder="" name="confirm-email" class="register-box-input">
+                    <input type="text" placeholder="" name="confirm-email" class="register-box-input" id="confirm-email">
                     <h3>Password:</h3>
-                    <input type="password"  placeholder="" name="password" class="register-box-input">
+                    <input type="password"  placeholder="" name="password" class="register-box-input" id="password-input">
                     <h3>Confirm Password:</h3>
-                    <input type="password"  placeholder="" name="confirm-password" class="register-box-input">
+                    <input type="password"  placeholder="" name="confirm-password" class="register-box-input" id="confirm-password">
                 </div>
 
                 {% if err %}
@@ -82,84 +82,244 @@
                 <div class="register-box-buttons">
                     <input type="submit" value="Register" class="register-box-button">
                 </div>
-                Already a user? <a href="{{ url_for('login') }}" class="login">Log-in here!</a>
+                Already a user? <a href="{{ url_for('login') }}" class="login-link">Log-in here!</a>
             </form>
         </div>
     </div>
 
     <script>
-        $(document).ready(function() {
-            const forbiddenChars = [
-  " ",    // Space
-  "!",    // Exclamation mark
-  "@",    // At symbol
-  "#",    // Hash
-  "$",    // Dollar sign
-  "%",    // Percent sign
-  "^",    // Caret
-  "&",    // Ampersand
-  "*",    // Asterisk
-  "(",    // Left parenthesis
-  ")",    // Right parenthesis
-  "+",    // Plus
-  "=",    // Equals
-  "{",    // Left curly brace
-  "}",    // Right curly brace
-  "[",    // Left square bracket
-  "]",    // Right square bracket
-  ":",    // Colon
-  ";",    // Semicolon
-  "'",    // Single quote
-  "\"",   // Double quote
-  "<",    // Less than
-  ">",    // Greater than
-  ",",    // Comma
-  ".",    // Period (dot)
-  "?",    // Question mark
-  "/",    // Slash
-  "\\",   // Backslash
-  "|",    // Vertical bar (pipe)
-  "~",    // Tilde
-  "`",    // Backtick
-  "-",    // Hyphen
-  "°",    // Degree symbol
-  "•",    // Bullet
-  "€",    // Euro sign
-  "£",    // Pound sign
-  "¥",    // Yen sign
-  "¢",    // Cent sign
-];
-
-            $('#username-input').on('input', function(){
-                valid = true;
-
-                if ($('#username-input').val().length < 3 || $('#username-input').val().length > 20) {
-                    valid = false;
+        const specialChars = [
+            " ", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "+", "=", "{", "}", "[", "]", ":", ";", "'", "\"", "<", ">", ",", ".", "?", "/", "\\", "|", "~", "`", "-", "°", "•", "€", "£", "¥", "¢"
+        ];
+  
+        function validatePassword(passwordValue) {
+            // Check password length
+            let passValid = true;
+            if (passwordValue.length < 8 || passwordValue.length > 20) {
+                    passValid = false;
+                    return passValid;
                 }
 
-                for (var i = 0; i < forbiddenChars.length; i++) {
-                    if ($('#username-input').val().includes(forbiddenChars[i])) {
-                        valid = false;
+                // Check for numbers
+                if (!/\d/.test(passwordValue)) {
+                    passValid = false;
+                    return passValid;
+                }
+
+                // Check for uppercase letters
+                if (!/[A-Z]/.test(passwordValue)) {
+                    passValid = false;
+                    return passValid;
+                }
+
+                // Check for lowercase letters
+                if (!/[a-z]/.test(passwordValue)) {
+                    passValid = false;
+                    return passValid;
+                }
+
+                // Check for special characters
+                for (let i = 0; i < specialChars.length; i++) {
+                    if (i === 0) { // Skip the first iteration (space character)
+                        continue;
+                    }
+
+                    if (passwordValue.includes(specialChars[i])) {
+                        earlyExit = true;  // Flag early exit if a special character is found
+                        break;
                     }
                 }
 
+                // Only set passValid to false if earlyExit was triggered (special character found)
+                if (!earlyExit) {
+                    passValid = false;
+                    return passValid;
+                }
+
+                return passValid;
+        }
+
+        function validateEmail(email) {
+            return new Promise((resolve, reject) => {
+                // Regular expression for basic email validation
+                const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+                // Test the email string against the regex
+                if (!emailPattern.test(email)) {
+                    resolve(false); // Invalid email
+                    return;
+                }
+
+                // Make an AJAX call to check if the email exists
                 $.ajax({
-                    url: '/usernamechecker/' + $('#username-input').val(),
+                    url: '/emailchecker/' + email,
                     method: 'GET',
                     success: function(data) {
-                        if (data === 'false') {
-                            valid = false;
+                        // Resolve the promise with `true` (valid) or `false` (invalid) based on server response
+                        if (data === 'true') {
+                            resolve(false); // Email exists, invalid
+                        } else {
+                            resolve(true); // Email is valid
                         }
+                    },
+                    error: function() {
+                        reject('Error during email validation');
                     }
                 });
-
-                if (valid) {
-                    $('#username-input').css('border', '4px solid green');
-                } else {
-                    $('#username-input').css('border', '4px solid red');
-                }
             });
+        }
+
+        function validateUsername(username) {
+            return new Promise((resolve, reject) => {
+                // Check username length
+                if (username.length < 3 || username.length > 20) {
+                    resolve(false); // Invalid username
+                    return;
+                }
+
+                // Check for forbidden characters
+                for (let i = 0; i < specialChars.length; i++) {
+                    if (username.includes(specialChars[i])) {
+                        resolve(false); // Invalid username due to special characters
+                        return;
+                    }
+                }
+
+                // Make an AJAX call to check if the username already exists
+                $.ajax({
+                    url: '/usernamechecker/' + username,
+                    method: 'GET',
+                    success: function(data) {
+                        // Resolve the promise with `true` (valid) or `false` (invalid) based on server response
+                        if (data === 'true') {
+                            resolve(false); // Username exists, invalid
+                        } else {
+                            resolve(true); // Username is valid
+                        }
+                    },
+                    error: function() {
+                        reject('Error during username validation');
+                    }
+                });
+            });
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+
+            let userNameValid = validateUsername($('#username-input').val());
+            let emailValid = false;
+            let passwordValid = false;
+            
+            if ($('#confirm-email').val() === $('#email-input').val()) {
+                emailValid = validateEmail($('#email-input').val());
+            }
+
+            if ($('#password-input').val() === $('#confirm-password').val()) {
+                passwordValid = validatePassword($('#password-input').val());
+            }
+
+            console.log(userNameValid, emailValid, passwordValid);
+
+            if (userNameValid && emailValid && passwordValid) {
+                $('.register-form').submit();
+            } else {
+                alert('Invalid form data');
+            }
+        }
+
+        $('.register-form').on('submit', validateForm);
+
+        $('#username-input').on('input', async function() {
+            const username = $('#username-input').val();
+            
+            if (username === "") {
+                $('#username-input').css('border', 'none');
+            } else {
+                try {
+                    const isValid = await validateUsername(username); // Wait for the promise to resolve
+                    if (isValid) {
+                        $('#username-input').css('border', '4px solid green');
+                    } else {
+                        $('#username-input').css('border', '4px solid red');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
         });
+
+        $('#email-input').on('input', async function() {
+            const email = $('#email-input').val();
+            
+            if (email === "") {
+                $('#email-input').css('border', 'none');
+            } else {
+                try {
+                    const isValid = await validateEmail(email); // Wait for the promise to resolve
+                    if (isValid) {
+                        $('#email-input').css('border', '4px solid green');
+                    } else {
+                        $('#email-input').css('border', '4px solid red');
+                    }
+                    
+                    // Confirm email field check
+                    if (email === $('#confirm-email').val()) {
+                        $('#confirm-email').css('border', '4px solid green');
+                    } else {
+                        $('#confirm-email').css('border', '4px solid red');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        });
+
+        $('#confirm-email').on('input', function() {
+            if ($('#confirm-email').val() === "") {
+                $('#confirm-email').css('border', 'none');
+            }
+            else if ($('#email-input').val() === $('#confirm-email').val()) {
+                $('#confirm-email').css('border', '4px solid green');
+            } else {
+                $('#confirm-email').css('border', '4px solid red');
+            }
+        });
+
+        $('#password-input').on('input', function() {
+
+            if ($('#password-input').val() === "") {
+                $('#password-input').css('border', 'none');
+            }
+            else {
+                const passwordValue = $('#password-input').val();
+
+                let passwordValid = validatePassword(passwordValue);
+                
+                // Update input border color based on validation result
+                if (passwordValid) {
+                    $('#password-input').css('border', '4px solid green');
+                } else {
+                    $('#password-input').css('border', '4px solid red');
+                }
+
+                if ($('#password-input').val() === $('#confirm-password').val()) {
+                    $('#confirm-password').css('border', '4px solid green');
+                } else {
+                    $('#confirm-password').css('border', '4px solid red');
+                }
+            }
+            });
+
+        $('#confirm-password').on('input', function() {
+            if ($('#password-input').val() === $('#confirm-password').val()) {
+                $('#confirm-password').css('border', '4px solid green');
+            } else {
+                $('#confirm-password').css('border', '4px solid red');
+            }
+        });
+
+
     </script>
 
     <script>
@@ -213,6 +373,10 @@
         var hl = document.getElementsByClassName("hl");
         var dropDownContainer = document.getElementsByClassName("dropdown-content-mobile")[0];
         var dropDownSVG = document.getElementById("dropdown-svg").querySelector("path");
+        var registerBox = document.getElementsByClassName("register-box")[0];
+        var inputs = document.getElementsByClassName("register-box-input");
+        var submitButton = document.getElementsByClassName("register-box-button")[0];
+        var loginLink = document.getElementsByClassName("login-link")[0];
         
         function toggleDarkMode() {
             if (localStorage.getItem('dark-mode') === 'true') {
@@ -230,6 +394,13 @@
             dropDownContainer.classList.toggle("dark-mode-divs");
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
+            registerBox.classList.toggle("dark-mode-divs");
+            submitButton.classList.toggle("register-box-button-dark");
+            loginLink.classList.toggle("login-dark");
+
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].classList.toggle("dark-mode-input");
+            }
             
             for (var i = 0; i < headerButtons.length; i++) {
                 headerButtons[i].classList.toggle("dark-mode-buttons");

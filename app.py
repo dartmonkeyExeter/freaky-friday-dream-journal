@@ -143,9 +143,34 @@ def login():
     else:
         return render_template("log-in.html", err=None)
 
-@app.route("/register")
+@app.route("/register", methods=['POST', 'GET'])
 def register():
-    return render_template("register.html")
+    if request.method == 'POST':
+        form = request.form
+        with db:
+            user_id = str(uuid.uuid4())
+
+            salt = bcrypt.gensalt()
+            password_hash = bcrypt.hashpw(form['password'].encode("utf-8"), salt)
+
+            # Insert the user into the 'users' table
+            cursor.execute(
+                """
+                INSERT INTO users (user_id, username, hash, email, admin)
+                VALUES (?, ?, ?, ?, ?);
+                """,
+                (user_id, form['username'], password_hash.decode("utf-8"), form['email'], 0),
+            )
+
+            db.commit()
+
+            session["username"] = form['username']
+            session["user_id"] = user_id
+
+            return redirect(url_for("dreams"))
+        
+    else:
+        return render_template("register.html")
 
 @app.route("/usernamechecker/<username>", methods=["GET"])
 def usernamechecker(username):
