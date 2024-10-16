@@ -10,7 +10,7 @@
     top: 50%;
     left: 50%;
     border-radius: 10px;
-    width: 10%;
+    width: 20vw;
     height: 10%;
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 1000;
@@ -158,6 +158,10 @@
     margin-top: 20px;
 }
 
+.dream-options-mobile {
+    display: none;
+}
+
 .dream-buttons {
     height: 100px;
     width: 100px;
@@ -226,13 +230,25 @@
     }
 
     .dream-options {
-        position: absolute;
-        bottom: 20px;
-        width: fit-content;
-        border: 10px solid #D4D4D4;
-        border-radius: 20px;
-        box-shadow: 0px 10px 0px 0px rgba(0,0,0,0.26);
+        display: none;
+    }
+
+    .dream-options-mobile {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding: 5px;
         background-color: #FAFAFE;
+        border: 8px solid #D4D4D4;
+        border-radius: 20px;
+        width: fit-content;
+        height: fit-content;
+        align-self: center;
+
+
     }
     
     .dream-info-left, .dream-info-right {

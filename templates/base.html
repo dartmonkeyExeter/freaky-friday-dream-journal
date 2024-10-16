@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dream Journal</title>
+    <title>{{ title }} - Dream Journal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dream.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,7 +38,7 @@
         <div class="header-right">
             {% if username %}
             <span id="user-name">{{ username }}.</span>
-            <img src="{{ url_for('static', filename='images/profilephotos/' + username + '.webp') }}" id="pfp">
+            <img src="{{ url_for('static', filename='images/profilephotos/' + user_id + '.webp') }}" id="pfp">
             {% else %}
             <a href="{{ url_for('login') }}" class="header-buttons">LOGIN</a>
             {% endif %}
@@ -54,9 +55,20 @@
         </div>
     </div>
 
-    <div class="main-content">
+    <script>
+        const dropDownButton = document.getElementsByClassName("dropdown-button-mobile")[0];
+        const dropDownContent = document.getElementsByClassName("dropdown-content-mobile")[0];
 
-    </div>
+        dropDownButton.addEventListener("click", function() {
+            dropDownContent.classList.toggle("show");
+        });
+
+        window.addEventListener("resize", function() {
+            if (window.innerWidth > 850) {
+                dropDownContent.classList.remove("show");
+            }
+        });
+    </script>
 
     <script>
         function goToPage(page) {
@@ -84,7 +96,6 @@
                 goToPage("/about");
             });
         }
-
     </script>
 
     <script>
@@ -93,7 +104,6 @@
         var headerButtons = document.getElementsByClassName("header-buttons");
         var vl = document.getElementsByClassName("vl");
         var hl = document.getElementsByClassName("hl");
-        var mainContent = document.getElementsByClassName("main-content")[0];
         var dropDownContainer = document.getElementsByClassName("dropdown-content-mobile")[0];
         var dropDownSVG = document.getElementById("dropdown-svg").querySelector("path");
         
@@ -107,7 +117,6 @@
             dropDownContainer.classList.toggle("dark-mode-divs");
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
-            mainContent.classList.toggle("dark-mode-divs");
             
             if (localStorage.getItem('dark-mode') === 'true') {
                 dropDownSVG.setAttribute("stroke", "#FFFFFF");
@@ -139,5 +148,6 @@
 
        toggle.addEventListener('change', toggleDarkMode);
     </script>
+
 </body>
 </html>

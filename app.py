@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for, session
 import sqlite3
 from datetime import datetime
-import uuid
+import uuid, bcrypt
 
 app = Flask(__name__)
 app.secret_key = "sdiusahdioasbfsdopjsdoifioiowesfiso"
@@ -15,13 +15,19 @@ def dummy_user():
 
 
 def get_session_info():
-    # dummy_user()
+    #dummy_user()
     if "username" in session:
         username = session.get("username")
         user_id = session.get("user_id")
+        
+        username = username[0]
+        user_id = user_id[0]
     else:
         username = None
         user_id = None
+
+    
+    
     return username, user_id
 
 
@@ -104,10 +110,46 @@ def delete(dream_id):
             return redirect(url_for("dreams"))
 
 
-@app.route("/login")
+@app.route("/login", methods=['POST', 'GET'])
 def login():
-    return "test"
+    username, user_id = get_session_info()
 
+    if username is None:
+
+        given_email = request.form.get('email')
+        given_pass = request.form.get('password')
+        err = None
+
+        cursor.execute("""
+                        SELECT hash FROM users WHERE email = ?;
+                    """, (given_email,))
+        
+        result = cursor.fetchone()
+
+        if result is None:
+            pass    
+        else:  
+            stored_hash = result[0].encode("utf-8")
+
+            if bcrypt.checkpw(given_pass.encode("utf-8"), stored_hash):
+                session["username"] = cursor.execute("""
+                                    SELECT username FROM users WHERE email = ?;
+                                    """, (given_email,)).fetchone()
+                session["user_id"] =  cursor.execute("""
+                                    SELECT user_id FROM users WHERE email = ?;
+                                    """, (given_email,)).fetchone()
+                return redirect(url_for("dreams"))
+            else:
+                err = "Incorrect email or password."
+
+        return render_template("log-in.html", err=err)
+    else:
+        return redirect(url_for("dreams"))
+
+
+@app.route("/register")
+def register():
+    return "not done yet"
 
 if __name__ == "__main__":
     # currently using a "fake user" session for testing
