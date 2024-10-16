@@ -143,18 +143,18 @@
                 localStorage.setItem('dark-mode', 'true');
             }
 
+            if (dropDownSVG.style.stroke === "rgb(255, 255, 255)") {
+                dropDownSVG.style.stroke = "rgb(0, 0, 0)";
+            } else {
+                dropDownSVG.style.stroke = "rgb(255, 255, 255)";
+            }
+
             dropDownContainer.classList.toggle("dark-mode-divs");
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
             loginBox.classList.toggle("dark-mode-divs");
             loginButton.classList.toggle("log-in-box-button-dark");
             registerButton.classList.toggle("register-dark");
-            
-            if (localStorage.getItem('dark-mode') === 'true') {
-                dropDownSVG.setAttribute("stroke", "#FFFFFF");
-            } else {
-                dropDownSVG.setAttribute("stroke", "#000000");
-            }
 
             for (var i = 0; i < loginInputs.length; i++) {
                 loginInputs[i].classList.toggle("dark-mode-input");

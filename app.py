@@ -25,11 +25,8 @@ def get_session_info():
     else:
         username = None
         user_id = None
-
-    
     
     return username, user_id
-
 
 @app.route("/dreams/<dream_id>")
 def dream(dream_id):
@@ -75,7 +72,6 @@ def dream(dream_id):
         user_id=user_id,
     )
 
-
 @app.route("/dreams")
 def dreams():
 
@@ -87,7 +83,6 @@ def dreams():
     return render_template(
         "dreams.html", dreams=dreams, username=username, user_id=user_id
     )
-
 
 @app.route("/delete/<dream_id>")
 def delete(dream_id):
@@ -109,47 +104,66 @@ def delete(dream_id):
             cursor.execute("DELETE FROM dreams WHERE dream_id = ?", (dream_id,))
             return redirect(url_for("dreams"))
 
-
 @app.route("/login", methods=['POST', 'GET'])
 def login():
     username, user_id = get_session_info()
 
-    if username is None:
+    if request.method == 'POST':
+        if username is None:
 
-        given_email = request.form.get('email')
-        given_pass = request.form.get('password')
-        err = None
+            given_email = request.form.get('email')
+            given_pass = request.form.get('password')
+            err = None
 
-        cursor.execute("""
-                        SELECT hash FROM users WHERE email = ?;
-                    """, (given_email,))
-        
-        result = cursor.fetchone()
+            cursor.execute("""
+                            SELECT hash FROM users WHERE email = ?;
+                        """, (given_email,))
+            
+            result = cursor.fetchone()
 
-        if result is None:
-            pass    
-        else:  
-            stored_hash = result[0].encode("utf-8")
+            if result is None:
+                err = "Incorrect email or password." 
+            else:  
+                stored_hash = result[0].encode("utf-8")
 
-            if bcrypt.checkpw(given_pass.encode("utf-8"), stored_hash):
-                session["username"] = cursor.execute("""
-                                    SELECT username FROM users WHERE email = ?;
-                                    """, (given_email,)).fetchone()
-                session["user_id"] =  cursor.execute("""
-                                    SELECT user_id FROM users WHERE email = ?;
-                                    """, (given_email,)).fetchone()
-                return redirect(url_for("dreams"))
-            else:
-                err = "Incorrect email or password."
+                if bcrypt.checkpw(given_pass.encode("utf-8"), stored_hash):
+                    session["username"] = cursor.execute("""
+                                        SELECT username FROM users WHERE email = ?;
+                                        """, (given_email,)).fetchone()
+                    session["user_id"] =  cursor.execute("""
+                                        SELECT user_id FROM users WHERE email = ?;
+                                        """, (given_email,)).fetchone()
+                    return redirect(url_for("dreams"))
+                else:
+                    err = "Incorrect email or password."
 
-        return render_template("log-in.html", err=err)
+            return render_template("log-in.html", err=err)
+        else:
+            return redirect(url_for("dreams"))
     else:
-        return redirect(url_for("dreams"))
-
+        return render_template("log-in.html", err=None)
 
 @app.route("/register")
 def register():
-    return "not done yet"
+    return render_template("register.html")
+
+@app.route("/usernamechecker/<username>", methods=["GET"])
+def usernamechecker(username):
+    cursor.execute("SELECT username FROM users WHERE username = ?", (username,))
+    result = cursor.fetchone()
+    if result is None:
+        return "false"
+    else:
+        return "true"
+
+@app.route("/emailchecker/<email>", methods=["GET"])
+def emailchecker(email):
+    cursor.execute("SELECT email FROM users WHERE email = ?", (email,))
+    result = cursor.fetchone()
+    if result is None:
+        return "false"
+    else:
+        return "true"
 
 if __name__ == "__main__":
     # currently using a "fake user" session for testing

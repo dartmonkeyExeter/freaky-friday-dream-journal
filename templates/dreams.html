@@ -56,6 +56,14 @@
     </div>
 
     <script>
+        const pfp = document.getElementById("pfp");
+
+        pfp.addEventListener("click", function() {
+            window.location.href = "/profile/{{ user_id }}";
+        });
+    </script>
+
+    <script>
         const dropDownButton = document.getElementsByClassName("dropdown-button-mobile")[0];
         const dropDownContent = document.getElementsByClassName("dropdown-content-mobile")[0];
 
@@ -114,15 +122,15 @@
                 localStorage.setItem('dark-mode', 'true');
             }
 
+            if (dropDownSVG.style.stroke === "rgb(255, 255, 255)") {
+                dropDownSVG.style.stroke = "rgb(0, 0, 0)";
+            } else {
+                dropDownSVG.style.stroke = "rgb(255, 255, 255)";
+            }
+
             dropDownContainer.classList.toggle("dark-mode-divs");
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
-            
-            if (localStorage.getItem('dark-mode') === 'true') {
-                dropDownSVG.setAttribute("stroke", "#FFFFFF");
-            } else {
-                dropDownSVG.setAttribute("stroke", "#000000");
-            }
 
             for (var i = 0; i < headerButtons.length; i++) {
                 headerButtons[i].classList.toggle("dark-mode-buttons");
@@ -133,7 +141,6 @@
             for (var i = 0; i < hl.length; i++) {
                 hl[i].classList.toggle("dark-mode-line");
             }
-
         }
 
         const toggle = document.getElementById('dark-mode-toggle');

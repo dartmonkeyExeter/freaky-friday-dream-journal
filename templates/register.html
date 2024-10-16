@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} - Dream Journal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@300;400;700&display=swap" rel="stylesheet">
@@ -54,11 +56,109 @@
         </div>
     </div>
 
-    <script>
-        const pfp = document.getElementById("pfp");
+    <div class="register-box">
+        <div class="register-box-content">
+            <div class="register-box-title">
+                <h1>Register</h1>
+            </div>
+            <form action="{{ url_for('register') }}" method="POST" class="register-form">
+                <div class="register-box-inputs">
+                    <h3>Username:</h3>
+                    <input type="text" placeholder="" name="username" class="register-box-input" id="username-input">
+                    <h3>Email:</h3>
+                    <input type="text" placeholder="" name="email" class="register-box-input">
+                    <h3>Confirm Email:</h3>
+                    <input type="text" placeholder="" name="confirm-email" class="register-box-input">
+                    <h3>Password:</h3>
+                    <input type="password"  placeholder="" name="password" class="register-box-input">
+                    <h3>Confirm Password:</h3>
+                    <input type="password"  placeholder="" name="confirm-password" class="register-box-input">
+                </div>
 
-        pfp.addEventListener("click", function() {
-            window.location.href = "/profile/{{ user_id }}";
+                {% if err %}
+                    <p style="color: red;">{{ err }}</p>
+                {% endif %}
+
+                <div class="register-box-buttons">
+                    <input type="submit" value="Register" class="register-box-button">
+                </div>
+                Already a user? <a href="{{ url_for('login') }}" class="login">Log-in here!</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const forbiddenChars = [
+  " ",    // Space
+  "!",    // Exclamation mark
+  "@",    // At symbol
+  "#",    // Hash
+  "$",    // Dollar sign
+  "%",    // Percent sign
+  "^",    // Caret
+  "&",    // Ampersand
+  "*",    // Asterisk
+  "(",    // Left parenthesis
+  ")",    // Right parenthesis
+  "+",    // Plus
+  "=",    // Equals
+  "{",    // Left curly brace
+  "}",    // Right curly brace
+  "[",    // Left square bracket
+  "]",    // Right square bracket
+  ":",    // Colon
+  ";",    // Semicolon
+  "'",    // Single quote
+  "\"",   // Double quote
+  "<",    // Less than
+  ">",    // Greater than
+  ",",    // Comma
+  ".",    // Period (dot)
+  "?",    // Question mark
+  "/",    // Slash
+  "\\",   // Backslash
+  "|",    // Vertical bar (pipe)
+  "~",    // Tilde
+  "`",    // Backtick
+  "-",    // Hyphen
+  "°",    // Degree symbol
+  "•",    // Bullet
+  "€",    // Euro sign
+  "£",    // Pound sign
+  "¥",    // Yen sign
+  "¢",    // Cent sign
+];
+
+            $('#username-input').on('input', function(){
+                valid = true;
+
+                if ($('#username-input').val().length < 3 || $('#username-input').val().length > 20) {
+                    valid = false;
+                }
+
+                for (var i = 0; i < forbiddenChars.length; i++) {
+                    if ($('#username-input').val().includes(forbiddenChars[i])) {
+                        valid = false;
+                    }
+                }
+
+                $.ajax({
+                    url: '/usernamechecker/' + $('#username-input').val(),
+                    method: 'GET',
+                    success: function(data) {
+                        if (data === 'false') {
+                            valid = false;
+                        }
+                    }
+                });
+
+                if (valid) {
+                    $('#username-input').css('border', '4px solid green');
+                } else {
+                    $('#username-input').css('border', '4px solid red');
+                }
+            });
         });
     </script>
 

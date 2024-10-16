@@ -124,6 +124,7 @@ body {
     height: 54px;
     border-radius: 50%;
     margin-left: 10px;
+    cursor: pointer;
 }
 
 /* The switch - the box around the slider */
