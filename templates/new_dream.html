@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} - Dream Journal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dream.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/new_dream.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,6 +52,38 @@
             <div class="header-buttons home-button">HOME</div>
             <div class="vl" style="height: 80%;"></div>
             <div class="header-buttons about-button">ABOUT</div>
+        </div>
+    </div>
+
+    <div class="new-dream-container">
+        <div class="new-dream-content">
+            <h1>New Dream</h1>
+            <form action="/dream" method="POST" class="new-dream-form">
+                <div class="new-dream-inputs">
+                    <h3>Title</h3>
+                    <input type="text" name="title" placeholder="" class="new-dream-input" required>
+                    <h3>Content</h3>
+                    <textarea name="content" placeholder="" class="new-dream-input" required></textarea>
+                    <h3>Description</h3>
+                    <textarea name="description" placeholder="" class="new-dream-input" required></textarea>
+                    <div class="left-align">
+                        <h3>Tag</h3>
+                        <select name="tag" class="dropdown-select" required>
+                            <option value="" disabled selected>Select a tag</option>
+                            <option value="Normal">Normal</option>
+                            <option value="Nightmare">Nightmare</option>
+                            <option value="Lucid">Lucid</option>
+                            <option value="Recurring">Recurring</option>
+                            <option value="Daydream">Daydream</option>
+                        </select>
+                    </div>
+                    <div class="left-align">
+                        <h3>Private?</h3>
+                        <input type="checkbox" name="private" class="new-dream-checkbox">
+                    </div>
+                    <input type="submit" value="Submit" class="new-dream-submit">
+                </div>
+            </form>
         </div>
     </div>
 

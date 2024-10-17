@@ -1,4 +1,4 @@
-.register-box {
+.new-dream-container {
     width: 40%;
     height: fit-content;
     padding-bottom: 20px;
@@ -16,12 +16,12 @@
     -moz-box-shadow: 0px 10px 0px 0px rgba(0,0,0,0.26);
 }
 
-.register-form {
+.new-dream-form {
     width: 100%;
     height: 100%;
 }
 
-.register-box-content {
+.new-dream-content {
     width: 100%;
     height: 100%;
     display: flex;
@@ -31,7 +31,16 @@
     text-align: center;
 }
 
-.register-box-input {
+.new-dream-inputs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+}
+
+.new-dream-input {
     width: 80%;
     height: 20px;
     background-color: #D4D4D4;
@@ -56,7 +65,7 @@ h1 {
     color: white;
 }
 
-.register-box-button {
+.new-dream-submit {
     width: 40%;
     background-color: rgb(126,36,176);
     border: none;
@@ -69,11 +78,11 @@ h1 {
     transition: transform 0.2s;
 }
 
-.register-box-button-dark {
+.new-dream-submit-dark {
     background-color: #303593;
 }
 
-.register-box-button:hover {
+.new-dream-submit:hover {
     transform: scale(1.1);
 }
 
@@ -88,32 +97,23 @@ h1 {
     color: #7479D5;
 }
 
-.register-box-buttons {
-    display: flex;
-    flex-direction: column; /* Stack the terms and register button vertically */
-    justify-content: center; /* Center the elements vertically */
-    align-items: center; /* Center the elements horizontally */
-    width: 100%; /* Ensure it takes full width of the form */
-}
-
-
-.terms {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 80%;
-    border: 4px dashed #D4D4D4;
-    border-radius: 10px;
-}
-
-.register-box-checkbox {
+.new-dream-checkbox {
     width: 20px;
     height: 20px;
     background-color: #D4D4D4; 
 }
 
+.left-align {
+    display: flex;
+    width: 50%;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+
+}
+
 @media screen and (max-width: 800px) {
-    .register-box {
+    .new-dream-container {
         width: 80%;
     }
     

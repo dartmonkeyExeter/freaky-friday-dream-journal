@@ -103,7 +103,7 @@ def dream(dream_id):
         profile_pic=profile_pic,
     )
 
-@app.route("/dream")
+@app.route("/dream", methods=["POST", "GET"])
 def dreams():
     username, user_id = get_session_info()
     
@@ -111,6 +111,33 @@ def dreams():
         return redirect(url_for("login"))
     
     profile_pic = get_profile_picture(user_id)
+    
+    if request.method == "POST":
+        form = request.form
+        
+        with db:
+            dream_id = str(uuid.uuid4())
+            upload_date = datetime.now().strftime("%Y-%m-%d")
+            
+            try: 
+                cursor.execute(
+                    """
+                    INSERT INTO dreams (dream_id, content, title, description, author_id, tag, upload_date, private)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+                    """,
+                    (dream_id, form["content"], form["title"], form["description"], user_id, form["tag"], upload_date, form["private"]),
+                )
+            except:
+                cursor.execute(
+                    """
+                    INSERT INTO dreams (dream_id, content, title, description, author_id, tag, upload_date, private)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+                    """,
+                    (dream_id, form["content"], form["title"], form["description"], user_id, form["tag"], upload_date, 0),
+                )
+            db.commit()
+
+            return redirect(url_for("dream", dream_id=dream_id))
 
     return render_template(
         "new_dream.html", username=username, user_id=user_id, profile_pic=profile_pic
@@ -136,16 +163,20 @@ def delete(dream_id):
             cursor.execute("DELETE FROM dreams WHERE dream_id = ?", (dream_id,))
             return redirect(url_for("dreams"))
 
-@app.route("/profile/<user_id>")
-def profile(user_id):
+@app.route("/profile/<author_id>")
+def profile(author_id): # ill do this later, since its not MVP
     username, user_id = get_session_info()
     profile_pic = get_profile_picture(user_id)
     
     with db:
-        
-        
+        if user_id == author_id:
+            cursor.execute("SELECT * FROM dreams WHERE author_id = ?", (author_id,))
+        else:
+            cursor.execute("SELECT * FROM dreams WHERE author_id = ? AND private = 0", (author_id,))
+
+        author_dreams = cursor.fetchall()
     
-    return "WIP"
+    return render_template('profile.html', username=username, user_id=user_id, profile_pic=profile_pic, author_dreams=author_dreams)
 
 @app.route("/login", methods=['POST', 'GET'])
 def login():

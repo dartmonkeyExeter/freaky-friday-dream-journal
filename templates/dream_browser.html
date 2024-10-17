@@ -69,7 +69,7 @@
                 </tr>
                 {% for dream in dreams %}
                 <tr class="dream-row clickable-row" id="{{ dream[0] }}">
-                    <td class="dream-cell dream-title">{{ dream[1] }}</td>  <!-- dream title (2nd element) -->
+                    <td class="dream-cell dream-title">{{ dream[2] }}</td>  <!-- dream title (2nd element) -->
                     <td class="dream-cell dream-tag">{{ dream[5] }}</td>  <!-- tag (6th element) -->
                     <td class="dream-cell dream-author">{{ author_id_to_name[dream[4]] }}</td>  <!-- author, possibly from a related table or to be fetched separately -->
                     <td class="dream-cell dream-date">{{ dream[6] }}</td>  <!-- upload date (7th element) -->
