@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} - Dream Journal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dream_browser.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@300;400;700&display=swap" rel="stylesheet">
@@ -36,7 +38,7 @@
 
         <div class="header-right">
             {% if username %}
-            <span id="user-name">{{ username }}.</span>
+            <span id="user-name">{{ username }}</span>
             <img src="{{ url_for('static', filename='images/profilephotos/' + profile_pic) }}" id="pfp">
             {% else %}
             <a href="{{ url_for('login') }}" class="header-buttons">LOGIN</a>
@@ -53,6 +55,67 @@
             <div class="header-buttons about-button">ABOUT</div>
         </div>
     </div>
+
+    <div class="browser">
+        <input label="Search" type="text" class="search-bar" placeholder="Search for dreams...">
+
+        <table class="dream-table">
+            <tbody>
+                <tr class="dream-row">
+                    <th class="dream-heading">Title</th>
+                    <th class="dream-heading">Tag</th>
+                    <th class="dream-heading">Author</th>
+                    <th class="dream-heading dream-date">Date</th>
+                </tr>
+                {% for dream in dreams %}
+                <tr class="dream-row clickable-row" id="{{ dream[0] }}">
+                    <td class="dream-cell dream-title">{{ dream[1] }}</td>  <!-- dream title (2nd element) -->
+                    <td class="dream-cell dream-tag">{{ dream[5] }}</td>  <!-- tag (6th element) -->
+                    <td class="dream-cell dream-author">{{ author_id_to_name[dream[4]] }}</td>  <!-- author, possibly from a related table or to be fetched separately -->
+                    <td class="dream-cell dream-date">{{ dream[6] }}</td>  <!-- upload date (7th element) -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+
+    <script>
+        const searchBar = document.getElementsByClassName("search-bar")[0];
+    
+        searchBar.addEventListener("input", function() {
+            const search = searchBar.value.toLowerCase(); // Ensures case-insensitive search
+            const rows = document.querySelectorAll("tr");
+    
+            for (let i = 1; i < rows.length; i++) {
+                const titleElement = rows[i].querySelector(".dream-title");
+                const tagElement = rows[i].querySelector(".dream-tag");
+                const authorElement = rows[i].querySelector(".dream-author");
+                const dateElement = rows[i].querySelector(".dream-date");
+    
+                const title = titleElement ? titleElement.textContent.toLowerCase() : "";
+                const tag = tagElement ? tagElement.textContent.toLowerCase() : "";
+                const author = authorElement ? authorElement.textContent.toLowerCase() : "";
+                const date = dateElement ? dateElement.textContent.toLowerCase() : "";
+        
+                if (title.includes(search) || tag.includes(search) || author.includes(search) || date.includes(search)) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        });
+    </script>
+    
+    <script>
+        const rows = document.querySelectorAll(".clickable-row");
+
+        rows.forEach(row => {
+            row.addEventListener("click", () => {
+                window.location.href = `/dream/${row.id}`;
+            });
+        });
+    </script>
 
     <script>
         const pfp = document.getElementById("pfp");
@@ -113,6 +176,8 @@
         var hl = document.getElementsByClassName("hl");
         var dropDownContainer = document.getElementsByClassName("dropdown-content-mobile")[0];
         var dropDownSVG = document.getElementById("dropdown-svg").querySelector("path");
+        var dreamBrowser = document.getElementsByClassName("browser")[0];
+        var tdsThsTrs = document.querySelectorAll("td, th, tr");
         
         function toggleDarkMode() {
             if (localStorage.getItem('dark-mode') === 'true') {
@@ -130,6 +195,12 @@
             dropDownContainer.classList.toggle("dark-mode-divs");
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
+            dreamBrowser.classList.toggle("dark-mode-divs");
+            searchBar.classList.toggle("search-bar-dark");
+
+            for (var i = 0; i < tdsThsTrs.length; i++) {
+                tdsThsTrs[i].classList.toggle("cell-row-dark");
+            }
             
             for (var i = 0; i < headerButtons.length; i++) {
                 headerButtons[i].classList.toggle("dark-mode-buttons");

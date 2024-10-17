@@ -33,7 +33,31 @@ def get_session_info():
     
     return username, user_id
 
-@app.route("/dreams/<dream_id>")
+@app.route("/")
+def dreambrowse():
+    username, user_id = get_session_info()
+    profile_pic = get_profile_picture(user_id)
+
+    author_id_to_name = {}
+
+    with db:
+        cursor.execute("SELECT * FROM dreams WHERE private = 0 ORDER BY upload_date DESC;")
+        dreams = cursor.fetchall()
+        
+        author_ids = set()
+        for dream in dreams:
+            author_ids.add(dream[4])
+        
+        for author_id in author_ids:
+            cursor.execute("SELECT username FROM users WHERE user_id = ?", (author_id,))
+            author_id_to_name[author_id] = cursor.fetchone()[0]
+    
+    
+    return render_template(
+        "dream_browser.html", dreams=dreams, author_id_to_name=author_id_to_name, username=username, user_id=user_id, profile_pic=profile_pic
+    )
+
+@app.route("/dream/<dream_id>")
 def dream(dream_id):
 
     username, user_id = get_session_info()
@@ -79,17 +103,17 @@ def dream(dream_id):
         profile_pic=profile_pic,
     )
 
-@app.route("/dreams")
+@app.route("/dream")
 def dreams():
-
     username, user_id = get_session_info()
+    
+    if username is None:
+        return redirect(url_for("login"))
+    
     profile_pic = get_profile_picture(user_id)
 
-    with db:
-        cursor.execute("SELECT * FROM dreams WHERE private = 0")
-        dreams = cursor.fetchall()
     return render_template(
-        "dreams.html", dreams=dreams, username=username, user_id=user_id, profile_pic=profile_pic
+        "new_dream.html", username=username, user_id=user_id, profile_pic=profile_pic
     )
 
 @app.route("/delete/<dream_id>")
@@ -111,6 +135,17 @@ def delete(dream_id):
         if author_id == user_id or admin == 1:
             cursor.execute("DELETE FROM dreams WHERE dream_id = ?", (dream_id,))
             return redirect(url_for("dreams"))
+
+@app.route("/profile/<user_id>")
+def profile(user_id):
+    username, user_id = get_session_info()
+    profile_pic = get_profile_picture(user_id)
+    
+    with db:
+        
+        
+    
+    return "WIP"
 
 @app.route("/login", methods=['POST', 'GET'])
 def login():
@@ -145,11 +180,11 @@ def login():
                 else:
                     err = "Incorrect email or password."
 
-            return render_template("log-in.html", err=err)
+            return render_template("log_in.html", err=err)
         else:
             return redirect(url_for("dreams"))
     else:
-        return render_template("log-in.html", err=None)
+        return render_template("log_in.html", err=None)
 
 @app.route("/register", methods=['POST', 'GET'])
 def register():

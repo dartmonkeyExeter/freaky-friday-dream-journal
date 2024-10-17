@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} - Dream Journal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dream.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,7 +28,7 @@
         </div>
 
         <div class="header-mid">
-            <div class="header-buttons dreams-button">DREAMS</div>
+            <div class="header-buttons dreams-button">DREAM</div>
             <div class="vl" style="height: 80%;"></div>
             <div class="header-buttons home-button">HOME</div>
             <div class="vl" style="height: 80%;"></div>
@@ -47,7 +47,7 @@
 
     <div class="dropdown-content-mobile">
         <div class="dropdown-content">
-            <div class="header-buttons dreams-button">DREAMS</div>
+            <div class="header-buttons dreams-button">DREAM</div>
             <div class="vl" style="height: 80%;"></div>
             <div class="header-buttons home-button">HOME</div>
             <div class="vl" style="height: 80%;"></div>
@@ -55,30 +55,13 @@
         </div>
     </div>
 
-    <div class="log-in-box">
-        <div class="log-in-box-content">
-            <div class="log-in-box-title">
-                <h1>Log In</h1>
-            </div>
-            <form action="{{ url_for('login') }}" method="POST" class="log-in-form">
-                <div class="log-in-box-inputs">
-                    <h3>Email:</h3>
-                    <input type="text" placeholder="" name="email" class="log-in-box-input">
-                    <h3>Password:</h3>
-                    <input type="password"  placeholder="" name="password" class="log-in-box-input">
-                </div>
+    <script>
+        const pfp = document.getElementById("pfp");
 
-                {% if err %}
-                    <p style="color: red;">{{ err }}</p>
-                {% endif %}
-
-                <div class="log-in-box-buttons">
-                    <input type="submit" value="Log In" class="log-in-box-button">
-                </div>
-                Not a user yet? <a href="{{ url_for('register') }}" class="register">Register here!</a>
-            </form>
-        </div>
-    </div>
+        pfp.addEventListener("click", function() {
+            window.location.href = "/profile/{{ user_id }}";
+        });
+    </script>
 
     <script>
         const dropDownButton = document.getElementsByClassName("dropdown-button-mobile")[0];
@@ -106,7 +89,7 @@
 
         for (var i = 0; i < dreamsButtons.length; i++) {
             dreamsButtons[i].addEventListener("click", function() {
-                goToPage("/dreams");
+                goToPage("/dream");
             });
         }
 
@@ -131,10 +114,6 @@
         var hl = document.getElementsByClassName("hl");
         var dropDownContainer = document.getElementsByClassName("dropdown-content-mobile")[0];
         var dropDownSVG = document.getElementById("dropdown-svg").querySelector("path");
-        var loginBox = document.getElementsByClassName("log-in-box")[0];
-        var loginInputs = document.getElementsByClassName("log-in-box-input");
-        var loginButton = document.getElementsByClassName("log-in-box-button")[0];
-        var registerButton = document.getElementsByClassName("register")[0];
         
         function toggleDarkMode() {
             if (localStorage.getItem('dark-mode') === 'true') {
@@ -152,13 +131,6 @@
             dropDownContainer.classList.toggle("dark-mode-divs");
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
-            loginBox.classList.toggle("dark-mode-divs");
-            loginButton.classList.toggle("log-in-box-button-dark");
-            registerButton.classList.toggle("register-dark");
-
-            for (var i = 0; i < loginInputs.length; i++) {
-                loginInputs[i].classList.toggle("dark-mode-input");
-            }
 
             for (var i = 0; i < headerButtons.length; i++) {
                 headerButtons[i].classList.toggle("dark-mode-buttons");
@@ -169,7 +141,6 @@
             for (var i = 0; i < hl.length; i++) {
                 hl[i].classList.toggle("dark-mode-line");
             }
-
         }
 
         const toggle = document.getElementById('dark-mode-toggle');
