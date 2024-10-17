@@ -123,12 +123,13 @@ def dreams():
             upload_date = datetime.now().strftime("%Y-%m-%d")
             
             try: 
+                form['private']
                 cursor.execute(
                     """
                     INSERT INTO dreams (dream_id, content, title, description, author_id, tag, upload_date, private)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?);
                     """,
-                    (dream_id, form["content"], form["title"], form["description"], user_id, form["tag"], upload_date, form["private"]),
+                    (dream_id, form["content"], form["title"], form["description"], user_id, form["tag"], upload_date, 1,),
                 )
             except:
                 cursor.execute(
@@ -136,7 +137,7 @@ def dreams():
                     INSERT INTO dreams (dream_id, content, title, description, author_id, tag, upload_date, private)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?);
                     """,
-                    (dream_id, form["content"], form["title"], form["description"], user_id, form["tag"], upload_date, 0),
+                    (dream_id, form["content"], form["title"], form["description"], user_id, form["tag"], upload_date, 0,),
                 )
             db.commit()
 
@@ -164,7 +165,46 @@ def delete(dream_id):
 
         if author_id == user_id or admin == 1:
             cursor.execute("DELETE FROM dreams WHERE dream_id = ?", (dream_id,))
-            return redirect(url_for("dreams"))
+            return redirect(url_for("dreambrowse"))
+        
+@app.route('/edit/<dream_id>', methods=["POST", "GET"])
+def edit(dream_id):
+    username, user_id = get_session_info()
+
+    with db:
+        author_id = cursor.execute("SELECT author_id FROM dreams WHERE dream_id = ?", (dream_id,)).fetchone()[0]
+        if author_id != user_id:
+            print(author_id)
+            print(user_id)
+            return redirect(url_for('dreambrowse'))
+        
+        profile_pic = get_profile_picture(user_id)
+
+        if request.method == "POST":
+            form = request.form
+
+            try:
+                form['private']
+                cursor.execute("UPDATE dreams SET content = ?, title = ?, description = ?, tag = ?, private = ? WHERE dream_id = ?", 
+                           (form['content'], form['title'], form['description'], form['tag'], 1, dream_id,))
+            except:
+                cursor.execute("UPDATE dreams SET content = ?, title = ?, description = ?, tag = ?, private = ? WHERE dream_id = ?", 
+                           (form['content'], form['title'], form['description'], form['tag'], 0, dream_id,))
+                
+            db.commit()
+
+            return redirect(url_for("dreambrowse", dream_id=dream_id))
+        
+        else: 
+            cursor.execute("SELECT * FROM dreams WHERE dream_id = ?", (dream_id,))
+            dream = cursor.fetchone()
+            content = dream[1]
+            title = dream[2]
+            description = dream[3]
+            tag = dream[5]
+            private = dream[8]
+
+            return render_template("edit.html", dream_id=dream_id, content=content, title=title, description=description, tag=tag, private=private, username=username, user_id=user_id, profile_pic=profile_pic)
 
 @app.route("/profile/<author_id>")
 def profile(author_id): # ill do this later, since its not MVP
@@ -270,6 +310,14 @@ def emailchecker(email):
         return "false"
     else:
         return "true"
+
+def send_verification_email(email, user_id):
+    # ill do this later
+
+@app.route("/verify/<user_id>/<int:verification_code>", methods=["POST", "GET"])
+def verify(user_id, verification_code):
+    return "verify"
+    # the plan for this is to send this user to this page when they click the link
 
 @app.route("/terms")
 def terms():

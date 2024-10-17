@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log-in - Dream Journal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <title>Submit Dream - Dream Journal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/new_dream.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,32 +55,75 @@
         </div>
     </div>
 
-    <div class="log-in-box">
-        <div class="log-in-box-content">
-            <div class="log-in-box-title">
-                <h1>Log In</h1>
-            </div>
-            <form action="{{ url_for('login') }}" method="POST" class="log-in-form">
-                <div class="log-in-box-inputs">
-                    <h3>Email:</h3>
-                    <input type="text" placeholder="" name="email" class="log-in-box-input">
-                    <h3>Password:</h3>
-                    <input type="password"  placeholder="" name="password" class="log-in-box-input">
+    <div class="new-dream-container">
+        <div class="new-dream-content">
+            <h1>Editing "{{ title }}"</h1>
+            <form action="/edit/{{ dream_id }}" method="POST" class="new-dream-form">
+                <div class="new-dream-inputs">
+                    <h3>Title</h3>
+                    <input type="text" name="title" placeholder="" class="new-dream-input" required maxlength="50" value="{{ title }}">
+                    <small id="title-char-limit">0/50</small>
+                    <h3>Content</h3>
+                    <textarea name="content" placeholder="" class="new-dream-input" required maxlength="5000">{{ content }}</textarea>
+                    <small id="content-char-limit">0/5000</small>
+                    <h3>Description</h3>
+                    <textarea name="description" placeholder="" class="new-dream-input" required maxlength="300">{{ description }}</textarea>
+                    <small id="description-char-limit">0/300</small>
+                    <div class="left-align">
+                        <h3>Tag</h3>
+                        <select name="tag" class="dropdown-select" required>
+                            <option value="Normal" {% if tag == "Normal" %} selected {% endif %}>Normal</option>
+                            <option value="Nightmare" {% if tag == "Nightmare" %} selected {% endif %}>Nightmare</option>
+                            <option value="Lucid" {% if tag == "Lucid" %} selected {% endif %}>Lucid</option>
+                            <option value="Recurring" {% if tag == "Recurring" %} selected {% endif %}>Recurring</option>
+                            <option value="Daydream" {% if tag == "Daydream" %} selected {% endif %}>Daydream</option>
+                        </select>
+                    </div>
+                    <div class="left-align">
+                        <h3>Private?</h3>
+                        <input type="checkbox" name="private" class="new-dream-checkbox" {% if private == 1 %}checked{% endif %}>
+                    </div>
+                    <input type="submit" value="Submit" class="new-dream-submit">
                 </div>
-
-                {% if err %}
-                    <p style="color: red;">{{ err }}</p>
-                {% endif %}
-
-                <a href="{{ url_for('forgot_password') }}" class="register">Forgot password?</a>
-
-                <div class="log-in-box-buttons">
-                    <input type="submit" value="Log In" class="log-in-box-button">
-                </div>
-                Not a user yet? <a href="{{ url_for('register') }}" class="register">Register here!</a>
             </form>
         </div>
     </div>
+
+    <script>
+        const titleInput = document.getElementsByName("title")[0];
+        const contentInput = document.getElementsByName("content")[0];
+        const descriptionInput = document.getElementsByName("description")[0];
+
+        const titleCharLim = document.getElementById("title-char-limit");
+        const contentCharLim = document.getElementById("content-char-limit");
+        const descriptionCharLim = document.getElementById("description-char-limit");
+
+        titleCharLim.innerHTML = titleInput.value.length + "/50";
+
+        contentCharLim.innerHTML = contentInput.value.length + "/5000";
+
+        descriptionCharLim.innerHTML = descriptionInput.value.length + "/300";
+
+        titleInput.addEventListener("input", function() {
+            titleCharLim.innerHTML = titleInput.value.length + "/50";
+        });
+
+        contentInput.addEventListener("input", function() {
+            contentCharLim.innerHTML = contentInput.value.length + "/5000";
+        });
+
+        descriptionInput.addEventListener("input", function() {
+            descriptionCharLim.innerHTML = descriptionInput.value.length + "/300";
+        });
+    </script>
+
+    <script>
+        const pfp = document.getElementById("pfp");
+
+        pfp.addEventListener("click", function() {
+            window.location.href = "/profile/{{ user_id }}";
+        });
+    </script>
 
     <script>
         const dropDownButton = document.getElementsByClassName("dropdown-button-mobile")[0];
@@ -133,10 +176,8 @@
         var hl = document.getElementsByClassName("hl");
         var dropDownContainer = document.getElementsByClassName("dropdown-content-mobile")[0];
         var dropDownSVG = document.getElementById("dropdown-svg").querySelector("path");
-        var loginBox = document.getElementsByClassName("log-in-box")[0];
-        var loginInputs = document.getElementsByClassName("log-in-box-input");
-        var loginButton = document.getElementsByClassName("log-in-box-button")[0];
-        var registerButton = document.getElementsByClassName("register");
+        var newDreamContainer = document.getElementsByClassName("new-dream-container")[0];
+        var inputs = document.getElementsByClassName("new-dream-input");
         
         function toggleDarkMode() {
             if (localStorage.getItem('dark-mode') === 'true') {
@@ -154,15 +195,10 @@
             dropDownContainer.classList.toggle("dark-mode-divs");
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
-            loginBox.classList.toggle("dark-mode-divs");
-            loginButton.classList.toggle("log-in-box-button-dark");
-            
-            for (var i = 0; i < registerButton.length; i++) {
-                registerButton[i].classList.toggle("register-dark");
-            }
+            newDreamContainer.classList.toggle("dark-mode-divs");
 
-            for (var i = 0; i < loginInputs.length; i++) {
-                loginInputs[i].classList.toggle("dark-mode-input");
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].classList.toggle("dark-mode-input");
             }
 
             for (var i = 0; i < headerButtons.length; i++) {
@@ -174,7 +210,6 @@
             for (var i = 0; i < hl.length; i++) {
                 hl[i].classList.toggle("dark-mode-line");
             }
-
         }
 
         const toggle = document.getElementById('dark-mode-toggle');
