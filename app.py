@@ -41,7 +41,10 @@ def dreambrowse():
     author_id_to_name = {}
 
     with db:
-        cursor.execute("SELECT * FROM dreams WHERE private = 0 ORDER BY upload_date DESC;")
+        if username:
+            cursor.execute("SELECT * FROM dreams WHERE private = 0 OR author_id = ? ORDER BY upload_date DESC;", (user_id,))
+        else:
+            cursor.execute("SELECT * FROM dreams WHERE private = 0 ORDER BY upload_date DESC;")
         dreams = cursor.fetchall()
         
         author_ids = set()
@@ -245,6 +248,10 @@ def register():
         
     else:
         return render_template("register.html")
+
+@app.route("/forgot_password", methods=['POST', 'GET'])
+def forgot_password():
+    return "forgot password"
 
 @app.route("/usernamechecker/<username>", methods=["GET"])
 def usernamechecker(username):

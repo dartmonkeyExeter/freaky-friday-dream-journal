@@ -61,11 +61,14 @@
             <form action="/dream" method="POST" class="new-dream-form">
                 <div class="new-dream-inputs">
                     <h3>Title</h3>
-                    <input type="text" name="title" placeholder="" class="new-dream-input" required>
+                    <input type="text" name="title" placeholder="" class="new-dream-input" required maxlength="50">
+                    <small id="title-char-limit">0/50</small>
                     <h3>Content</h3>
-                    <textarea name="content" placeholder="" class="new-dream-input" required></textarea>
+                    <textarea name="content" placeholder="" class="new-dream-input" required maxlength="5000"></textarea>
+                    <small id="content-char-limit">0/5000</small>
                     <h3>Description</h3>
-                    <textarea name="description" placeholder="" class="new-dream-input" required></textarea>
+                    <textarea name="description" placeholder="" class="new-dream-input" required maxlength="300"></textarea>
+                    <small id="description-char-limit">0/300</small>
                     <div class="left-align">
                         <h3>Tag</h3>
                         <select name="tag" class="dropdown-select" required>
@@ -86,6 +89,28 @@
             </form>
         </div>
     </div>
+
+    <script>
+        const titleInput = document.getElementsByName("title")[0];
+        const contentInput = document.getElementsByName("content")[0];
+        const descriptionInput = document.getElementsByName("description")[0];
+
+        const titleCharLim = document.getElementById("title-char-limit");
+        const contentCharLim = document.getElementById("content-char-limit");
+        const descriptionCharLim = document.getElementById("description-char-limit");
+
+        titleInput.addEventListener("input", function() {
+            titleCharLim.innerHTML = titleInput.value.length + "/50";
+        });
+
+        contentInput.addEventListener("input", function() {
+            contentCharLim.innerHTML = contentInput.value.length + "/5000";
+        });
+
+        descriptionInput.addEventListener("input", function() {
+            descriptionCharLim.innerHTML = descriptionInput.value.length + "/300";
+        });
+    </script>
 
     <script>
         const pfp = document.getElementById("pfp");
@@ -146,6 +171,8 @@
         var hl = document.getElementsByClassName("hl");
         var dropDownContainer = document.getElementsByClassName("dropdown-content-mobile")[0];
         var dropDownSVG = document.getElementById("dropdown-svg").querySelector("path");
+        var newDreamContainer = document.getElementsByClassName("new-dream-container")[0];
+        var inputs = document.getElementsByClassName("new-dream-input");
         
         function toggleDarkMode() {
             if (localStorage.getItem('dark-mode') === 'true') {
@@ -163,6 +190,11 @@
             dropDownContainer.classList.toggle("dark-mode-divs");
             bdy.classList.toggle("dark-mode");
             header.classList.toggle("dark-mode-divs");
+            newDreamContainer.classList.toggle("dark-mode-divs");
+
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].classList.toggle("dark-mode-input");
+            }
 
             for (var i = 0; i < headerButtons.length; i++) {
                 headerButtons[i].classList.toggle("dark-mode-buttons");

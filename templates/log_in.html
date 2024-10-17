@@ -72,6 +72,8 @@
                     <p style="color: red;">{{ err }}</p>
                 {% endif %}
 
+                <a href="{{ url_for('forgot_password') }}" class="register">Forgot password?</a>
+
                 <div class="log-in-box-buttons">
                     <input type="submit" value="Log In" class="log-in-box-button">
                 </div>
@@ -134,7 +136,7 @@
         var loginBox = document.getElementsByClassName("log-in-box")[0];
         var loginInputs = document.getElementsByClassName("log-in-box-input");
         var loginButton = document.getElementsByClassName("log-in-box-button")[0];
-        var registerButton = document.getElementsByClassName("register")[0];
+        var registerButton = document.getElementsByClassName("register");
         
         function toggleDarkMode() {
             if (localStorage.getItem('dark-mode') === 'true') {
@@ -154,7 +156,10 @@
             header.classList.toggle("dark-mode-divs");
             loginBox.classList.toggle("dark-mode-divs");
             loginButton.classList.toggle("log-in-box-button-dark");
-            registerButton.classList.toggle("register-dark");
+            
+            for (var i = 0; i < registerButton.length; i++) {
+                registerButton[i].classList.toggle("register-dark");
+            }
 
             for (var i = 0; i < loginInputs.length; i++) {
                 loginInputs[i].classList.toggle("dark-mode-input");
