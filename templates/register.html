@@ -73,6 +73,7 @@
                     <input type="password"  placeholder="" name="password" class="register-box-input" id="password-input">
                     <h3>Confirm Password:</h3>
                     <input type="password"  placeholder="" name="confirm-password" class="register-box-input" id="confirm-password">
+                    <br>
                 </div>
 
                 {% if err %}
@@ -80,9 +81,19 @@
                 {% endif %}
 
                 <div class="register-box-buttons">
+                    <br>
+                    <div class="terms">
+                        <p>
+                        By signing up, you agree to our 
+                        <a href="{{ url_for('terms') }}" class="link">Terms of Service</a> and 
+                        <a href="{{ url_for('privacy') }}" class="link">Privacy Policy.</a>
+                        </p>
+                        <input type="checkbox" name="terms" value="terms" class="register-box-checkbox">
+                    </div>
+                    <br>
                     <input type="submit" value="Register" class="register-box-button">
                 </div>
-                Already a user? <a href="{{ url_for('login') }}" class="login-link">Log-in here!</a>
+                Already a user? <a href="{{ url_for('login') }}" class="link">Log-in here!</a>
             </form>
         </div>
     </div>
@@ -184,12 +195,23 @@
             });
         }
 
+        function validateCheck() {
+            return new Promise((resolve, reject) => {
+                if ($('.register-box-checkbox').is(':checked')) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            });
+        }
+
         async function validateForm(event) {
             event.preventDefault();
 
             let userNameValid = await validateUsername($('#username-input').val());
             let emailValid = false;
             let passwordValid = false;
+            let termsValid = await validateCheck();
             
             if ($('#confirm-email').val() === $('#email-input').val()) {
                 emailValid = await validateEmail($('#email-input').val());
@@ -199,12 +221,10 @@
                 passwordValid = await validatePassword($('#password-input').val());
             }
 
-            console.log(userNameValid, emailValid, passwordValid);
-
-            if (userNameValid && emailValid && passwordValid) {
+            if (userNameValid && emailValid && passwordValid && termsValid) {
                 $('.register-form')[0].submit();
             } else {
-                alert('Invalid form data');
+                alert('Invalid form data, please make sure all fields are correct.');
             }
         }
 
@@ -356,7 +376,7 @@
         var registerBox = document.getElementsByClassName("register-box")[0];
         var inputs = document.getElementsByClassName("register-box-input");
         var submitButton = document.getElementsByClassName("register-box-button")[0];
-        var loginLink = document.getElementsByClassName("login-link")[0];
+        var loginLink = document.getElementsByClassName("link");
         
         function toggleDarkMode() {
             if (localStorage.getItem('dark-mode') === 'true') {
@@ -376,7 +396,10 @@
             header.classList.toggle("dark-mode-divs");
             registerBox.classList.toggle("dark-mode-divs");
             submitButton.classList.toggle("register-box-button-dark");
-            loginLink.classList.toggle("login-dark");
+            
+            for (var i = 0; i < loginLink.length; i++) {
+                loginLink[i].classList.toggle("link-dark");
+            }
 
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].classList.toggle("dark-mode-input");

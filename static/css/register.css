@@ -27,6 +27,7 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    justify-content: center;
     text-align: center;
 }
 
@@ -39,6 +40,10 @@
     margin: 5px;
     padding: 5px;
     font-size: 16px;
+    text-align: center;
+}
+
+p {
     text-align: center;
 }
 
@@ -72,15 +77,39 @@ h1 {
     transform: scale(1.1);
 }
 
-.login-link {
+.link {
     text-decoration: none;
     font-weight: bold;
     color: #E16266;
     transition: transform 0.2s;
 }
 
-.login-dark {
+.link-dark {
     color: #7479D5;
+}
+
+.register-box-buttons {
+    display: flex;
+    flex-direction: column; /* Stack the terms and register button vertically */
+    justify-content: center; /* Center the elements vertically */
+    align-items: center; /* Center the elements horizontally */
+    width: 100%; /* Ensure it takes full width of the form */
+}
+
+
+.terms {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 80%;
+    border: 4px dashed #D4D4D4;
+    border-radius: 10px;
+}
+
+.register-box-checkbox {
+    width: 20px;
+    height: 20px;
+    background-color: #D4D4D4;
 }
 
 @media screen and (max-width: 800px) {

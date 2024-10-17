@@ -198,6 +198,14 @@ def emailchecker(email):
     else:
         return "true"
 
+@app.route("/terms")
+def terms():
+    return "terms of service"
+
+@app.route("/privacy")
+def privacy():
+    return "privacy policy"
+
 if __name__ == "__main__":
     # currently using a "fake user" session for testing
     app.run(debug=True)
