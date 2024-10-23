@@ -76,9 +76,7 @@
     </div>
 
     <div class="main-content">
-        <div class="dream-content">
-            {{ content }}
-        </div>
+        <textarea readonly class="dream-content">{{content}}</textarea>
 
         <div class="vl" style="height: 100%;" id="dream-seperator"></div>
         <div class="hl" style="width: 80%; align-self: center;" id="dream-seperator-mobile"></div>
@@ -269,6 +267,7 @@
         var dropDownContainer = document.getElementsByClassName("dropdown-content-mobile")[0];
         var dropDownSVG = document.getElementById("dropdown-svg").querySelector("path");
         var mobileButtons = document.getElementsByClassName("dream-options-mobile")[0];
+        var textAreaContent = document.getElementsByClassName("dream-content")[0];
         
         function toggleDarkMode() {
             if (localStorage.getItem('dark-mode') === 'true') {
@@ -303,6 +302,7 @@
             header.classList.toggle("dark-mode-divs");
             mainContent.classList.toggle("dark-mode-divs");
             mobileButtons.classList.toggle("dark-mode-divs");
+            textAreaContent.classList.toggle("dream-content-dark");
             
 
             for (var i = 0; i < headerButtons.length; i++) {

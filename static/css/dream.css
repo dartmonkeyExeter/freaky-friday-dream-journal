@@ -83,6 +83,15 @@
     padding: 10px;
     flex: 2;
     overflow-y: scroll;
+    resize: none;
+    border: none;
+    background-color: #FAFAFE;
+    color: #000000;
+}
+
+.dream-content-dark {
+    background-color: #1E1E22;
+    color: #ffffff;
 }
 
 .info-and-buttons {
