@@ -33,6 +33,10 @@ def get_session_info():
     
     return username, user_id
 
+@app.errorhandler(404)
+def four_oh_four():
+    return "skibidi ohio sigma rizz"
+
 @app.route("/")
 def dreambrowse():
     username, user_id = get_session_info()

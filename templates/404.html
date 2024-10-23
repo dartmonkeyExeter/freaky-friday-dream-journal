@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Dream Journal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header-container">
+        <div class="header-left">
+            <div class="dropdown-button-mobile">
+                <svg id="dropdown-svg" xmlns="http://www.w3.org/2000/svg" width="48px" height="48px" viewBox="0 0 24 24" fill="none">
+                    <path d="M8 6L21 6.00078M8 12L21 12.0008M8 18L21 18.0007M3 6.5H4V5.5H3V6.5ZM3 12.5H4V11.5H3V12.5ZM3 18.5H4V17.5H3V18.5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+    
+            <label class="switch" id="dark-mode-switch">
+                <input type="checkbox" id="dark-mode-toggle">
+                <span class="slider round"></span>
+            </label>
+        </div>
+
+        <div class="header-mid">
+            <div class="header-buttons dreams-button">DREAM</div>
+            <div class="vl" style="height: 80%;"></div>
+            <div class="header-buttons home-button">HOME</div>
+            <div class="vl" style="height: 80%;"></div>
+            <div class="header-buttons about-button">ABOUT</div>
+        </div>
+
+        <div class="header-right">
+            {% if username %}
+            <span id="user-name">{{ username }}</span>
+            <img src="{{ url_for('static', filename='images/profilephotos/' + profile_pic) }}" id="pfp">
+            {% else %}
+            <a href="{{ url_for('login') }}" class="header-buttons">LOGIN</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="dropdown-content-mobile">
+        <div class="dropdown-content">
+            <div class="header-buttons dreams-button">DREAM</div>
+            <div class="vl" style="height: 80%;"></div>
+            <div class="header-buttons home-button">HOME</div>
+            <div class="vl" style="height: 80%;"></div>
+            <div class="header-buttons about-button">ABOUT</div>
+        </div>
+    </div>
+
+    <div class="404-container">
+        <h1>404 Not Found!!</h1>
+        <p>
+            The page you are looking for does not exist. Please check the URL and try again pookie.
+        </p>
+    </div>
+
+    <script>
+        const pfp = document.getElementById("pfp");
+
+        pfp.addEventListener("click", function() {
+            window.location.href = "/profile/{{ user_id }}";
+        });
+    </script>
+
+    <script>
+        const dropDownButton = document.getElementsByClassName("dropdown-button-mobile")[0];
+        const dropDownContent = document.getElementsByClassName("dropdown-content-mobile")[0];
+
+        dropDownButton.addEventListener("click", function() {
+            dropDownContent.classList.toggle("show");
+        });
+
+        window.addEventListener("resize", function() {
+            if (window.innerWidth > 850) {
+                dropDownContent.classList.remove("show");
+            }
+        });
+    </script>
+
+    <script>
+        function goToPage(page) {
+            window.location.href = page;
+        }
+
+        var dreamsButtons = document.getElementsByClassName("dreams-button");
+        var homeButtons = document.getElementsByClassName("home-button");
+        var aboutButtons = document.getElementsByClassName("about-button");
+
+        for (var i = 0; i < dreamsButtons.length; i++) {
+            dreamsButtons[i].addEventListener("click", function() {
+                goToPage("/dream");
+            });
+        }
+
+        for (var i = 0; i < homeButtons.length; i++) {
+            homeButtons[i].addEventListener("click", function() {
+                goToPage("/");
+            });
+        }
+
+        for (var i = 0; i < aboutButtons.length; i++) {
+            aboutButtons[i].addEventListener("click", function() {
+                goToPage("/about");
+            });
+        }
+    </script>
+
+    <script>
+        var bdy = document.body;
+        var header = document.getElementsByClassName("header-container")[0];
+        var headerButtons = document.getElementsByClassName("header-buttons");
+        var vl = document.getElementsByClassName("vl");
+        var hl = document.getElementsByClassName("hl");
+        var dropDownContainer = document.getElementsByClassName("dropdown-content-mobile")[0];
+        var dropDownSVG = document.getElementById("dropdown-svg").querySelector("path");
+        
+        function toggleDarkMode() {
+            if (localStorage.getItem('dark-mode') === 'true') {
+                localStorage.setItem('dark-mode', 'false');
+            } else {
+                localStorage.setItem('dark-mode', 'true');
+            }
+
+            if (dropDownSVG.style.stroke === "rgb(255, 255, 255)") {
+                dropDownSVG.style.stroke = "rgb(0, 0, 0)";
+            } else {
+                dropDownSVG.style.stroke = "rgb(255, 255, 255)";
+            }
+
+            dropDownContainer.classList.toggle("dark-mode-divs");
+            bdy.classList.toggle("dark-mode");
+            header.classList.toggle("dark-mode-divs");
+            
+            for (var i = 0; i < headerButtons.length; i++) {
+                headerButtons[i].classList.toggle("dark-mode-buttons");
+            }
+            for (var i = 0; i < vl.length; i++) {
+                vl[i].classList.toggle("dark-mode-line");
+            }
+            for (var i = 0; i < hl.length; i++) {
+                hl[i].classList.toggle("dark-mode-line");
+            }
+
+        }
+
+        const toggle = document.getElementById('dark-mode-toggle');
+
+        let isDarkMode = localStorage.getItem('dark-mode') === 'true';
+
+        if (isDarkMode) {
+            toggle.checked = true;
+            toggleDarkMode();
+            localStorage.setItem('dark-mode', 'true');
+        }
+
+       toggle.addEventListener('change', toggleDarkMode);
+    </script>
+
+</body>
+</html>
