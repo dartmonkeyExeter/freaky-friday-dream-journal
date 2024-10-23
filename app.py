@@ -260,6 +260,12 @@ def login():
     else:
         return render_template("log_in.html", err=None)
 
+@app.route("/logout")
+def logout():
+    session.pop("username", None)
+    session.pop("user_id", None)
+    return redirect(url_for("dreambrowse"))
+
 @app.route("/register", methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
@@ -312,6 +318,7 @@ def emailchecker(email):
         return "true"
 
 def send_verification_email(email, user_id):
+    pass
     # ill do this later
 
 @app.route("/verify/<user_id>/<int:verification_code>", methods=["POST", "GET"])
