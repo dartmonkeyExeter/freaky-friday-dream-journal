@@ -13,6 +13,7 @@ def dummy_user():
     session["username"] = "dreamer1"
     session["user_id"] = "ed03a10d-6e9e-442d-a318-7f21f31ebcde"
 
+
 def get_profile_picture(user_id):
     if user_id is None:
         return None
@@ -22,20 +23,23 @@ def get_profile_picture(user_id):
             return f"{user_id}.{ext}"
     return "default.jpg"
 
+
 def get_session_info():
-    #dummy_user()
+    # dummy_user()
     if "username" in session:
         username = session.get("username")
         user_id = session.get("user_id")
     else:
         username = None
         user_id = None
-    
+
     return username, user_id
+
 
 @app.errorhandler(404)
 def four_oh_four():
     return "skibidi ohio sigma rizz"
+
 
 @app.route("/")
 def dreambrowse():
@@ -46,23 +50,33 @@ def dreambrowse():
 
     with db:
         if username:
-            cursor.execute("SELECT * FROM dreams WHERE private = 0 OR author_id = ? ORDER BY upload_date DESC;", (user_id,))
+            cursor.execute(
+                "SELECT * FROM dreams WHERE private = 0 OR author_id = ? ORDER BY upload_date DESC;",
+                (user_id,),
+            )
         else:
-            cursor.execute("SELECT * FROM dreams WHERE private = 0 ORDER BY upload_date DESC;")
+            cursor.execute(
+                "SELECT * FROM dreams WHERE private = 0 ORDER BY upload_date DESC;"
+            )
         dreams = cursor.fetchall()
-        
+
         author_ids = set()
         for dream in dreams:
             author_ids.add(dream[4])
-        
+
         for author_id in author_ids:
             cursor.execute("SELECT username FROM users WHERE user_id = ?", (author_id,))
             author_id_to_name[author_id] = cursor.fetchone()[0]
-    
-    
+
     return render_template(
-        "dream_browser.html", dreams=dreams, author_id_to_name=author_id_to_name, username=username, user_id=user_id, profile_pic=profile_pic
+        "dream_browser.html",
+        dreams=dreams,
+        author_id_to_name=author_id_to_name,
+        username=username,
+        user_id=user_id,
+        profile_pic=profile_pic,
     )
+
 
 @app.route("/dream/<dream_id>")
 def dream(dream_id):
@@ -110,30 +124,40 @@ def dream(dream_id):
         profile_pic=profile_pic,
     )
 
+
 @app.route("/dream", methods=["POST", "GET"])
 def dreams():
     username, user_id = get_session_info()
-    
+
     if username is None:
         return redirect(url_for("login"))
-    
+
     profile_pic = get_profile_picture(user_id)
-    
+
     if request.method == "POST":
         form = request.form
-        
+
         with db:
             dream_id = str(uuid.uuid4())
             upload_date = datetime.now().strftime("%Y-%m-%d")
-            
-            try: 
-                form['private']
+
+            try:
+                form["private"]
                 cursor.execute(
                     """
                     INSERT INTO dreams (dream_id, content, title, description, author_id, tag, upload_date, private)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?);
                     """,
-                    (dream_id, form["content"], form["title"], form["description"], user_id, form["tag"], upload_date, 1,),
+                    (
+                        dream_id,
+                        form["content"],
+                        form["title"],
+                        form["description"],
+                        user_id,
+                        form["tag"],
+                        upload_date,
+                        1,
+                    ),
                 )
             except:
                 cursor.execute(
@@ -141,7 +165,16 @@ def dreams():
                     INSERT INTO dreams (dream_id, content, title, description, author_id, tag, upload_date, private)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?);
                     """,
-                    (dream_id, form["content"], form["title"], form["description"], user_id, form["tag"], upload_date, 0,),
+                    (
+                        dream_id,
+                        form["content"],
+                        form["title"],
+                        form["description"],
+                        user_id,
+                        form["tag"],
+                        upload_date,
+                        0,
+                    ),
                 )
             db.commit()
 
@@ -150,6 +183,7 @@ def dreams():
     return render_template(
         "new_dream.html", username=username, user_id=user_id, profile_pic=profile_pic
     )
+
 
 @app.route("/delete/<dream_id>")
 def delete(dream_id):
@@ -170,36 +204,57 @@ def delete(dream_id):
         if author_id == user_id or admin == 1:
             cursor.execute("DELETE FROM dreams WHERE dream_id = ?", (dream_id,))
             return redirect(url_for("dreambrowse"))
-        
-@app.route('/edit/<dream_id>', methods=["POST", "GET"])
+
+
+@app.route("/edit/<dream_id>", methods=["POST", "GET"])
 def edit(dream_id):
     username, user_id = get_session_info()
 
     with db:
-        author_id = cursor.execute("SELECT author_id FROM dreams WHERE dream_id = ?", (dream_id,)).fetchone()[0]
+        author_id = cursor.execute(
+            "SELECT author_id FROM dreams WHERE dream_id = ?", (dream_id,)
+        ).fetchone()[0]
         if author_id != user_id:
             print(author_id)
             print(user_id)
-            return redirect(url_for('dreambrowse'))
-        
+            return redirect(url_for("dreambrowse"))
+
         profile_pic = get_profile_picture(user_id)
 
         if request.method == "POST":
             form = request.form
 
             try:
-                form['private']
-                cursor.execute("UPDATE dreams SET content = ?, title = ?, description = ?, tag = ?, private = ? WHERE dream_id = ?", 
-                           (form['content'], form['title'], form['description'], form['tag'], 1, dream_id,))
+                form["private"]
+                cursor.execute(
+                    "UPDATE dreams SET content = ?, title = ?, description = ?, tag = ?, private = ? WHERE dream_id = ?",
+                    (
+                        form["content"],
+                        form["title"],
+                        form["description"],
+                        form["tag"],
+                        1,
+                        dream_id,
+                    ),
+                )
             except:
-                cursor.execute("UPDATE dreams SET content = ?, title = ?, description = ?, tag = ?, private = ? WHERE dream_id = ?", 
-                           (form['content'], form['title'], form['description'], form['tag'], 0, dream_id,))
-                
+                cursor.execute(
+                    "UPDATE dreams SET content = ?, title = ?, description = ?, tag = ?, private = ? WHERE dream_id = ?",
+                    (
+                        form["content"],
+                        form["title"],
+                        form["description"],
+                        form["tag"],
+                        0,
+                        dream_id,
+                    ),
+                )
+
             db.commit()
 
             return redirect(url_for("dreambrowse", dream_id=dream_id))
-        
-        else: 
+
+        else:
             cursor.execute("SELECT * FROM dreams WHERE dream_id = ?", (dream_id,))
             dream = cursor.fetchone()
             content = dream[1]
@@ -208,52 +263,82 @@ def edit(dream_id):
             tag = dream[5]
             private = dream[8]
 
-            return render_template("edit.html", dream_id=dream_id, content=content, title=title, description=description, tag=tag, private=private, username=username, user_id=user_id, profile_pic=profile_pic)
+            return render_template(
+                "edit.html",
+                dream_id=dream_id,
+                content=content,
+                title=title,
+                description=description,
+                tag=tag,
+                private=private,
+                username=username,
+                user_id=user_id,
+                profile_pic=profile_pic,
+            )
+
 
 @app.route("/profile/<author_id>")
-def profile(author_id): # ill do this later, since its not MVP
+def profile(author_id):  # ill do this later, since its not MVP
     username, user_id = get_session_info()
     profile_pic = get_profile_picture(user_id)
-    
+
     with db:
         if user_id == author_id:
             cursor.execute("SELECT * FROM dreams WHERE author_id = ?", (author_id,))
         else:
-            cursor.execute("SELECT * FROM dreams WHERE author_id = ? AND private = 0", (author_id,))
+            cursor.execute(
+                "SELECT * FROM dreams WHERE author_id = ? AND private = 0", (author_id,)
+            )
 
         author_dreams = cursor.fetchall()
-    
-    return render_template('profile.html', username=username, user_id=user_id, profile_pic=profile_pic, author_dreams=author_dreams)
 
-@app.route("/login", methods=['POST', 'GET'])
+    return render_template(
+        "profile.html",
+        username=username,
+        user_id=user_id,
+        profile_pic=profile_pic,
+        author_dreams=author_dreams,
+    )
+
+
+@app.route("/login", methods=["POST", "GET"])
 def login():
     username, user_id = get_session_info()
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if username is None:
 
-            given_email = request.form.get('email')
-            given_pass = request.form.get('password')
+            given_email = request.form.get("email")
+            given_pass = request.form.get("password")
             err = None
 
-            cursor.execute("""
+            cursor.execute(
+                """
                             SELECT hash FROM users WHERE email = ?;
-                        """, (given_email,))
-            
+                        """,
+                (given_email,),
+            )
+
             result = cursor.fetchone()
 
             if result is None:
-                err = "Incorrect email or password." 
-            else:  
+                err = "Incorrect email or password."
+            else:
                 stored_hash = result[0].encode("utf-8")
 
                 if bcrypt.checkpw(given_pass.encode("utf-8"), stored_hash):
-                    session["username"] = cursor.execute("""
+                    session["username"] = cursor.execute(
+                        """
                                         SELECT username FROM users WHERE email = ?;
-                                        """, (given_email,)).fetchone()[0]
-                    session["user_id"] =  cursor.execute("""
+                                        """,
+                        (given_email,),
+                    ).fetchone()[0]
+                    session["user_id"] = cursor.execute(
+                        """
                                         SELECT user_id FROM users WHERE email = ?;
-                                        """, (given_email,)).fetchone()[0]
+                                        """,
+                        (given_email,),
+                    ).fetchone()[0]
                     return redirect(url_for("dreams"))
                 else:
                     err = "Incorrect email or password."
@@ -264,21 +349,23 @@ def login():
     else:
         return render_template("log_in.html", err=None)
 
+
 @app.route("/logout")
 def logout():
     session.pop("username", None)
     session.pop("user_id", None)
     return redirect(url_for("dreambrowse"))
 
-@app.route("/register", methods=['POST', 'GET'])
+
+@app.route("/register", methods=["POST", "GET"])
 def register():
-    if request.method == 'POST':
+    if request.method == "POST":
         form = request.form
         with db:
             user_id = str(uuid.uuid4())
 
             salt = bcrypt.gensalt()
-            password_hash = bcrypt.hashpw(form['password'].encode("utf-8"), salt)
+            password_hash = bcrypt.hashpw(form["password"].encode("utf-8"), salt)
 
             # Insert the user into the 'users' table
             cursor.execute(
@@ -286,22 +373,30 @@ def register():
                 INSERT INTO users (user_id, username, hash, email, admin)
                 VALUES (?, ?, ?, ?, ?);
                 """,
-                (user_id, form['username'], password_hash.decode("utf-8"), form['email'], 0),
+                (
+                    user_id,
+                    form["username"],
+                    password_hash.decode("utf-8"),
+                    form["email"],
+                    0,
+                ),
             )
 
             db.commit()
 
-            session["username"] = form['username']
+            session["username"] = form["username"]
             session["user_id"] = user_id
 
             return redirect(url_for("dreams"))
-        
+
     else:
         return render_template("register.html")
 
-@app.route("/forgot_password", methods=['POST', 'GET'])
+
+@app.route("/forgot_password", methods=["POST", "GET"])
 def forgot_password():
     return "forgot password"
+
 
 @app.route("/usernamechecker/<username>", methods=["GET"])
 def usernamechecker(username):
@@ -312,6 +407,7 @@ def usernamechecker(username):
     else:
         return "true"
 
+
 @app.route("/emailchecker/<email>", methods=["GET"])
 def emailchecker(email):
     cursor.execute("SELECT email FROM users WHERE email = ?", (email,))
@@ -321,22 +417,27 @@ def emailchecker(email):
     else:
         return "true"
 
+
 def send_verification_email(email, user_id):
     pass
     # ill do this later
+
 
 @app.route("/verify/<user_id>/<int:verification_code>", methods=["POST", "GET"])
 def verify(user_id, verification_code):
     return "verify"
     # the plan for this is to send this user to this page when they click the link
 
+
 @app.route("/terms")
 def terms():
     return "terms of service"
 
+
 @app.route("/privacy")
 def privacy():
     return "privacy policy"
+
 
 if __name__ == "__main__":
     # currently using a "fake user" session for testing
