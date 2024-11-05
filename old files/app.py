@@ -8,12 +8,6 @@ app.secret_key = "sdiusahdioasbfsdopjsdoifioiowesfiso"
 db = sqlite3.connect("dreams_db.sqlite", check_same_thread=False)
 cursor = db.cursor()
 
-
-def dummy_user():
-    session["username"] = "dreamer1"
-    session["user_id"] = "ed03a10d-6e9e-442d-a318-7f21f31ebcde"
-
-
 def get_profile_picture(user_id):
     if user_id is None:
         return None
@@ -39,7 +33,6 @@ def get_session_info():
 @app.errorhandler(404)
 def four_oh_four():
     return "skibidi ohio sigma rizz"
-
 
 @app.route("/")
 def dreambrowse():
