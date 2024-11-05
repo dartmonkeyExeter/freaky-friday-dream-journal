@@ -4,6 +4,7 @@ from app.dreams.models import Dream
 from app.auth.models import User
 import uuid
 from datetime import datetime
+from app.utils import get_session_info, get_profile_picture
 
 dreams_bp = Blueprint("dreams", __name__, url_prefix="/dreams")
 
@@ -16,23 +17,16 @@ def dreambrowse():
 
     with db:
         if username:
-            cursor.execute(
-                "SELECT * FROM dreams WHERE private = 0 OR author_id = ? ORDER BY upload_date DESC;",
-                (user_id,),
-            )
+            dreams = Dream.query.filter(Dream.author_id == user_id or Dream.private == False).all()
         else:
-            cursor.execute(
-                "SELECT * FROM dreams WHERE private = 0 ORDER BY upload_date DESC;"
-            )
-        dreams = cursor.fetchall()
+            dreams = Dream.query.filter(Dream.private == False).all()
 
         author_ids = set()
         for dream in dreams:
             author_ids.add(dream[4])
 
         for author_id in author_ids:
-            cursor.execute("SELECT username FROM users WHERE user_id = ?", (author_id,))
-            author_id_to_name[author_id] = cursor.fetchone()[0]
+            author_id_to_name[author_id] = User.query.filter(User.user_id == author_id).first()
 
     return render_template(
         "dream_browser.html",
@@ -50,8 +44,8 @@ def dream(dream_id):
     profile_pic = get_profile_picture(user_id)
 
     with db:
-        cursor.execute("SELECT * FROM dreams WHERE dream_id = ?", (dream_id,))
-        dream = cursor.fetchone()
+        dream = Dream.query.filter(Dream.dream_id == dream_id).first()
+
         if dream is None:
             return "Dream not found", 404
         else:
@@ -65,8 +59,7 @@ def dream(dream_id):
             upload_date = upload_date.strftime("%d.%m.%Y")
             # likes = dream[8] im not using this yet (maybe never)
 
-            cursor.execute("SELECT username FROM users WHERE user_id = ?", (author_id,))
-            author_name = cursor.fetchone()[0]
+            author_name = User.query.filter(User.user_id == author_id).first()[1]
 
     if user_id == author_id:
         user_is_author = True
