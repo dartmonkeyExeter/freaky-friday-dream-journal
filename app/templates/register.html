@@ -41,7 +41,7 @@
             <span id="user-name">{{ username }}</span>
             <img src="{{ url_for('static', filename='images/profilephotos/' + profile_pic) }}" id="pfp">
             {% else %}
-            <a href="{{ url_for('login') }}" class="header-buttons">LOGIN</a>
+            <a href="{{ url_for('auth.login') }}" class="header-buttons">LOGIN</a>
             {% endif %}
         </div>
     </div>
@@ -61,7 +61,7 @@
             <div class="register-box-title">
                 <h1>Register</h1>
             </div>
-            <form action="{{ url_for('register') }}" method="POST" class="register-form">
+            <form action="{{ url_for('auth.register') }}" method="POST" class="register-form">
                 <div class="register-box-inputs">
                     <h3>Username:</h3>
                     <input type="text" placeholder="" name="username" class="register-box-input" id="username-input">
@@ -85,15 +85,15 @@
                     <div class="terms">
                         <p>
                         By signing up, you agree to our 
-                        <a href="{{ url_for('terms') }}" class="link">Terms of Service</a> and 
-                        <a href="{{ url_for('privacy') }}" class="link">Privacy Policy.</a>
+                        <a href="{{ url_for('auth.terms') }}" class="link">Terms of Service</a> and 
+                        <a href="{{ url_for('auth.privacy') }}" class="link">Privacy Policy.</a>
                         </p>
                         <input type="checkbox" name="terms" value="terms" class="register-box-checkbox">
                     </div>
                     <br>
                     <input type="submit" value="Register" class="register-box-button">
                 </div>
-                Already a user? <a href="{{ url_for('login') }}" class="link">Log-in here!</a>
+                Already a user? <a href="{{ url_for('auth.login') }}" class="link">Log-in here!</a>
             </form>
         </div>
     </div>

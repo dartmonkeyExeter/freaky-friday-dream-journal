@@ -39,7 +39,7 @@
             <span id="user-name">{{ username }}</span>
             <img src="{{ url_for('static', filename='images/profilephotos/' + profile_pic) }}" id="pfp">
             {% else %}
-            <a href="{{ url_for('login') }}" class="header-buttons">LOGIN</a>
+            <a href="{{ url_for('auth.login') }}" class="header-buttons">LOGIN</a>
             {% endif %}
         </div>
     </div>
@@ -57,7 +57,7 @@
     {{ author_dreams }}
 
     {% if username %}
-    <a href="{{ url_for('logout') }}">
+    <a href="{{ url_for('auth.logout') }}">
         <button class="logout-button">TEMP LOGOUT</button>
     </a>
     {% endif %}
